@@ -15,7 +15,7 @@ func _ready():
 
 	# l'ennemi du menu sert de décor : il ne doit pas avancer
 	_enemy.set_physics_process(false)
-	_enemy.setup(["f", "j"], 0, 1)
+	_enemy.setup(["f", "j"], null, 1)
 
 	_difficulty.select(GlobalGame.getLevelDifficulty())
 	_layout.select(GlobalGame.getKeyboardLayout())

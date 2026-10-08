@@ -101,11 +101,36 @@ func get_keys(level: int) -> Array:
 
 
 # tire une touche en privilégiant les nouvelles touches du niveau
-func pick_key(level: int) -> String:
+# part des touches tirées parmi les points faibles du joueur, quand il en a
+const WEAK_KEY_CHANCE := 0.4
+
+
+# weak_keys : touche -> poids ; ces touches ratées reviennent plus souvent
+func pick_key(level: int, weak_keys := {}) -> String:
+	var available = get_keys(level)
+	var weights := {}
+	for key in weak_keys:
+		if available.has(key):
+			weights[key] = weak_keys[key]
+	if not weights.is_empty() and randf() < WEAK_KEY_CHANCE:
+		return _pick_weighted(weights)
+
 	var new_keys = get_new_keys(level)
 	if not new_keys.is_empty() and randf() < 0.5:
 		return new_keys.pick_random()
 	return get_keys(level).pick_random()
+
+
+func _pick_weighted(weights: Dictionary) -> String:
+	var total := 0.0
+	for key in weights:
+		total += weights[key]
+	var roll = randf() * total
+	for key in weights:
+		roll -= weights[key]
+		if roll <= 0:
+			return key
+	return weights.keys().back()
 
 
 func get_finger(key: String) -> String:

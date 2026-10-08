@@ -7,6 +7,12 @@ var _combo := 0
 var _best_combo := 0
 var _killed := 0
 
+# points faibles : touche -> score, augmenté à chaque erreur sur cette touche et
+# diminué à chaque réussite ; les touches faibles sont reproposées plus souvent
+const WEAKNESS_ON_ERROR := 2
+const WEAKNESS_ON_SUCCESS := 1
+var _weak_keys := {}
+
 
 func reset_game():
 	_max_life = GlobalGame.player_start_life
@@ -15,6 +21,7 @@ func reset_game():
 	_combo = 0
 	_best_combo = 0
 	_killed = 0
+	_weak_keys.clear()
 
 
 func get_life() -> int:
@@ -66,6 +73,22 @@ func add_good_key():
 	_score += 10 * get_multiplier()
 	GlobalEvents.combo_changed.emit(_combo)
 	GlobalEvents.score_changed.emit(_score)
+
+
+func add_key_error(key: String):
+	_weak_keys[key] = _weak_keys.get(key, 0) + WEAKNESS_ON_ERROR
+
+
+func add_key_success(key: String):
+	if not _weak_keys.has(key):
+		return
+	_weak_keys[key] -= WEAKNESS_ON_SUCCESS
+	if _weak_keys[key] <= 0:
+		_weak_keys.erase(key)
+
+
+func get_weak_keys() -> Dictionary:
+	return _weak_keys
 
 
 func reset_combo():

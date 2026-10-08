@@ -5,12 +5,19 @@ extends Node2D
 @export_file("*.tscn") var menu_scene_path: String
 
 const SPAWN_X := 520.0
+# au-delà, l'ennemi n'est pas encore à l'écran : pas de ruée possible
+const DASH_MAX_X := 460.0
 const MAX_ENEMIES := 5
 const LEVEL_UP_HEAL := 20
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
 const READY_KEYS := ["f", "j"]
+# précision minimale pour passer au niveau suivant ; en dessous, le niveau est rejoué
+const REQUIRED_ACCURACY := 0.94
+# nombre de touches ratées montrées dans le bilan
+const MISSED_KEYS_SHOWN := 3
 
 signal player_ready
+signal stats_closed
 
 @onready var _player = $Player
 @onready var _enemies: Node2D = $Enemies
@@ -28,6 +35,14 @@ var _is_level_starting := false
 var _is_level_complete := false
 var _is_waiting_ready := false
 var _ready_pressed: Array = []
+var _is_showing_stats := false
+var _can_close_stats := false
+
+# statistiques de la tentative en cours
+var _good_keys := 0
+var _errors := 0
+# touche attendue -> nombre d'erreurs
+var _missed := {}
 
 
 func _ready():
@@ -50,7 +65,16 @@ func _unhandled_input(event):
 		get_viewport().set_input_as_handled()
 		return
 
-	if _is_gameover or get_tree().paused or event.unicode == 0:
+	if _is_gameover or get_tree().paused:
+		return
+
+	if _is_showing_stats:
+		if _can_close_stats and event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+			stats_closed.emit()
+		get_viewport().set_input_as_handled()
+		return
+
+	if event.unicode == 0:
 		return
 
 	var typed = String.chr(event.unicode).to_lower()
@@ -61,10 +85,14 @@ func _unhandled_input(event):
 	get_viewport().set_input_as_handled()
 
 
-func _start_level(level: int):
+# focus_keys : touches ratées lors de la tentative précédente du même niveau
+func _start_level(level: int, focus_keys: Array = []):
 	_level = level
 	_killed_in_level = 0
 	_is_level_complete = false
+	_good_keys = 0
+	_errors = 0
+	_missed.clear()
 	GlobalGame.saveLevel(level)
 
 	var new_keys = GlobalLessons.get_new_keys(level)
@@ -75,6 +103,8 @@ func _start_level(level: int):
 	var subtitle = tr("LEVEL_ALL_KEYS")
 	if not new_keys.is_empty():
 		subtitle = tr("LEVEL_NEW_KEYS") % " ".join(new_keys).to_upper()
+	if not focus_keys.is_empty():
+		subtitle = tr("LEVEL_FOCUS_KEYS") % " ".join(focus_keys).to_upper()
 
 	_is_level_starting = true
 	_spawn_timer.stop()
@@ -140,10 +170,10 @@ func _spawn_enemy():
 	var enemy: Enemy = _pick_enemy_scene().instantiate()
 	var keys := []
 	for i in enemy.key_count:
-		keys.append(GlobalLessons.pick_key(_level))
+		keys.append(GlobalLessons.pick_key(_level, GlobalPlayer.get_weak_keys()))
 
 	enemy.position = Vector2(SPAWN_X, _player.position.y)
-	enemy.setup(keys, _player.position.x + enemy.attack_distance, _get_speed_coef())
+	enemy.setup(keys, _player, _get_speed_coef())
 	if not _queue.is_empty():
 		enemy.front_enemy = _queue.back()
 
@@ -158,19 +188,27 @@ func _on_key_typed(typed: String):
 		return
 
 	var target: Enemy = _queue[0]
-	if typed != target.get_next_key():
+	var expected = target.get_next_key()
+	if typed != expected:
+		_errors += 1
+		_missed[expected] = _missed.get(expected, 0) + 1
+		GlobalPlayer.add_key_error(expected)
 		GlobalPlayer.reset_combo()
 		_key_track.wrong_key()
 		GlobalEvents.wrong_key.emit(target.get_next_key(), typed)
 		return
 
-	if not _player.can_hit(target):
-		# bonne touche mais ennemi hors de portée : coup dans le vide
+	# bonne touche mais ennemi hors de portée : le joueur se rue sur lui s'il est
+	# à l'écran, sinon c'est un coup dans le vide
+	var must_dash = not _player.can_hit(target)
+	if must_dash and target.position.x > DASH_MAX_X:
 		GlobalPlayer.reset_combo()
 		_player.whiff()
 		_key_track.too_early()
 		return
 
+	_good_keys += 1
+	GlobalPlayer.add_key_success(typed)
 	GlobalPlayer.add_good_key()
 	_key_track.pop_key()
 	GlobalEvents.enemy_hit.emit(target, typed)
@@ -178,7 +216,10 @@ func _on_key_typed(typed: String):
 	# la frappe suivante vise déjà l'ennemi d'après, même si le coup n'a pas encore porté
 	if target.is_doomed():
 		_remove_from_queue(target)
-	_player.attack(target)
+	if must_dash:
+		_player.dash_attack(target)
+	else:
+		_player.attack(target)
 
 
 func _remove_from_queue(enemy: Enemy):
@@ -203,8 +244,8 @@ func _on_enemy_die(enemy: Enemy):
 			_is_level_complete = true
 			_spawn_timer.stop()
 
-	if _is_level_complete and _queue.is_empty():
-		_level_up()
+	if _is_level_complete and _queue.is_empty() and not _is_showing_stats:
+		_end_level()
 
 
 func _on_enemy_attack_player(enemy: Enemy):
@@ -213,9 +254,35 @@ func _on_enemy_attack_player(enemy: Enemy):
 	GlobalPlayer.take_damage(enemy.damage)
 
 
-func _level_up():
-	GlobalPlayer.heal(LEVEL_UP_HEAL)
-	_start_level(_level + 1)
+func get_accuracy() -> float:
+	var total = _good_keys + _errors
+	return 1.0 if total == 0 else float(_good_keys) / total
+
+
+# bilan du niveau : on avance si la précision est suffisante, sinon on rejoue
+# le niveau en insistant sur les touches ratées
+func _end_level():
+	var accuracy = get_accuracy()
+	var passed = accuracy >= REQUIRED_ACCURACY
+	var missed_keys = _missed.keys()
+	missed_keys.sort_custom(func(a, b): return _missed[a] > _missed[b])
+	missed_keys = missed_keys.slice(0, MISSED_KEYS_SHOWN)
+
+	_is_showing_stats = true
+	_can_close_stats = false
+	await _hud.level_stats.show_stats(passed, accuracy, REQUIRED_ACCURACY, _good_keys, _errors, missed_keys)
+	_can_close_stats = true
+	await stats_closed
+	_is_showing_stats = false
+	await _hud.level_stats.hide_stats()
+	if _is_gameover:
+		return
+
+	if passed:
+		GlobalPlayer.heal(LEVEL_UP_HEAL)
+		_start_level(_level + 1)
+	else:
+		_start_level(_level, missed_keys)
 
 
 func _on_player_gameover():

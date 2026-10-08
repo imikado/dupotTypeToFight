@@ -14,6 +14,7 @@ const LIFE_LOW_RATIO := 0.3
 
 @onready var key_track = $KeyTrack
 @onready var keyboard_overlay = $KeyboardOverlay
+@onready var level_stats = $LevelStats
 
 @onready var _life_bar: ProgressBar = $LifeBar
 @onready var _score_label: Label = $ScoreLabel

@@ -20,7 +20,8 @@ const ATTACK_COOLDOWN := 1.0
 var keys: Array = []
 var front_enemy: Enemy = null
 
-var _target_x := 0.0
+# l'ennemi s'arrête au contact du joueur, là où il se trouve (il peut se ruer en avant)
+var _player: Node2D = null
 var _state = STATE.WALK
 var _attack_cooldown := 0.0
 
@@ -28,10 +29,16 @@ var _attack_cooldown := 0.0
 @onready var hurt_box: Area2D = $HurtBox
 
 
-func setup(new_keys: Array, target_x: float, speed_coef: float):
+func setup(new_keys: Array, player: Node2D, speed_coef: float):
 	keys = new_keys
-	_target_x = target_x
+	_player = player
 	speed *= speed_coef
+
+
+func _get_target_x() -> float:
+	if is_instance_valid(_player):
+		return _player.position.x + attack_distance
+	return position.x
 
 
 func _ready():
@@ -46,6 +53,10 @@ func _physics_process(delta):
 		STATE.WALK:
 			_walk(delta)
 		STATE.ATTACK:
+			# le joueur a reculé : on le suit
+			if position.x > _get_target_x() + 2 and _sprite.animation != "attack":
+				_state = STATE.WALK
+				return
 			_attack_cooldown -= delta
 			if _attack_cooldown <= 0 and _sprite.animation != "attack" and not is_doomed() and not GlobalPlayer.is_dead():
 				_sprite.play("attack")
@@ -54,13 +65,14 @@ func _physics_process(delta):
 # avance jusqu'au joueur ; si un ennemi est déjà devant (au contact ou en route),
 # on attend derrière lui dans la file
 func _walk(delta):
-	var limit_x = _target_x
+	var target_x = _get_target_x()
+	var limit_x = target_x
 	if is_instance_valid(front_enemy) and front_enemy.is_alive():
 		limit_x = max(limit_x, front_enemy.position.x + QUEUE_SPACING)
 
 	position.x = move_toward(position.x, limit_x, speed * delta)
 
-	if position.x <= _target_x:
+	if position.x <= target_x:
 		_state = STATE.ATTACK
 		_attack_cooldown = 0.0
 	elif position.x <= limit_x:

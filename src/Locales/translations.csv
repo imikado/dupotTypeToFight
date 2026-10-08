@@ -22,3 +22,13 @@ GAME_OVER,Game Over,Game Over
 NEW_RECORD,New record!,Nouveau record !
 REPLAY,Play again,Rejouer
 GAME_OVER_STATS,Level %d   Enemies %d   Best combo %d,Niveau %d   Ennemis %d   Combo max %d
+STATS_LEVEL_PASSED,Level complete!,Niveau réussi !
+STATS_LEVEL_RETRY,Try again!,Encore un essai !
+STATS_ACCURACY,Accuracy: %d%%,Précision : %d %%
+STATS_GOOD_ERRORS,Good keys: %d   Errors: %d,Bonnes touches : %d   Erreurs : %d
+STATS_MISSED_KEYS,Most missed: %s,Les plus ratées : %s
+STATS_NO_MISSED_KEY,"No mistakes, perfect!","Aucune erreur, parfait !"
+STATS_NEXT_LEVEL,Next level unlocked,Niveau suivant débloqué
+STATS_REQUIRED,%d%% accuracy needed to move on,Il faut %d %% de précision pour avancer
+STATS_CONTINUE,Press SPACE to continue,Appuie sur ESPACE pour continuer
+LEVEL_FOCUS_KEYS,Practice: %s,Entrainement : %s

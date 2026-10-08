@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://src/UI/Controls/Shared/icon-player.png" id="2_icon"]
 [ext_resource type="PackedScene" path="res://src/UI/key_track.tscn" id="3_track"]
 [ext_resource type="PackedScene" path="res://src/UI/keyboard_overlay.tscn" id="4_keyboard"]
+[ext_resource type="PackedScene" path="res://src/UI/level_stats.tscn" id="5_stats"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
 bg_color = Color(0.0627451, 0.0862745, 0.2, 0.8)
@@ -117,6 +118,8 @@ autowrap_mode = 0
 [node name="KeyTrack" parent="." instance=ExtResource("3_track")]
 
 [node name="KeyboardOverlay" parent="." instance=ExtResource("4_keyboard")]
+
+[node name="LevelStats" parent="." instance=ExtResource("5_stats")]
 
 [node name="Banner" type="Control" parent="."]
 layout_mode = 3
