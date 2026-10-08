@@ -12,6 +12,8 @@ extends Control
 
 func _ready():
 	get_tree().paused = false
+	# le premier plan du décor passerait devant les boutons
+	$Background/Foreground.visible = false
 
 	# l'ennemi du menu sert de décor : il ne doit pas avancer
 	_enemy.set_physics_process(false)

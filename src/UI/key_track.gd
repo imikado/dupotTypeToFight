@@ -1,13 +1,22 @@
 extends Control
 
-# Bande de touches en bas de l'écran : affiche, dans l'ordre d'arrivée,
-# les touches à taper pour vaincre les ennemis présents.
+# Piste de touches en bas de l'écran, façon jeu de rythme : chaque tuile glisse
+# en continu vers la ligne de frappe (à gauche) au rythme de l'approche de son
+# ennemi ; une tuile sur la ligne est à portée de coup.
+
+signal key_validated(key: String)
+signal key_missed(key: String)
+signal key_too_early(key: String)
 
 const TILE_SIZE := Vector2(20, 20)
 const TILE_SPACING := 24.0
-const GROUP_SPACING := 10.0
-const START_X := 12.0
 const TILE_Y := 8.0
+# ligne de frappe : position x des tuiles dont l'ennemi est à portée
+const HIT_X := 16.0
+# pixels de piste par pixel de distance entre le joueur et l'ennemi
+const LANE_SCALE := 1.2
+# vitesse de glissement des tuiles vers leur position (plus grand = plus vif)
+const SLIDE_SHARPNESS := 14.0
 
 # fond de tuile = couleur du doigt assombrie, bordure = couleur du doigt
 const TILE_DARKEN := 0.45
@@ -15,6 +24,8 @@ const COLOR_CURRENT := Color.WHITE
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 const COLOR_GOOD := Color(0.3, 0.9, 0.4)
 const COLOR_TOO_EARLY := Color(1, 0.6, 0.15)
+const COLOR_HIT_LINE := Color(1, 1, 1, 0.35)
+const COLOR_HIT_LINE_ACTIVE := Color(0.3, 0.9, 0.4, 0.9)
 
 # éclats autour d'une tuile validée
 const BURST_COUNT := 8
@@ -22,9 +33,52 @@ const BURST_DISTANCE := 24.0
 const BURST_SIZE := Vector2(3, 3)
 
 @onready var _tiles_container: Control = $Tiles
+@onready var _hit_line: ColorRect = $HitLine
 
 # [{node, enemy, key}]
 var _tiles: Array = []
+var _player = null
+
+
+func set_player(player):
+	_player = player
+
+
+func _process(delta):
+	var previous_x = -INF
+	var previous_enemy = null
+	var weight = 1.0 - exp(-SLIDE_SHARPNESS * delta)
+	for tile_data in _tiles:
+		var tile: Panel = tile_data.node
+		var target_x = HIT_X
+		if _player and is_instance_valid(tile_data.enemy):
+			target_x += max(0.0, _player.distance_to_hit(tile_data.enemy)) * LANE_SCALE
+		# les touches d'un même ennemi se suivent ; les tuiles ne se chevauchent jamais
+		if tile_data.enemy == previous_enemy:
+			target_x = previous_x + TILE_SPACING
+		target_x = max(target_x, previous_x + TILE_SPACING)
+		tile.position.x = lerp(tile.position.x, target_x, weight)
+		previous_x = target_x
+		previous_enemy = tile_data.enemy
+
+	var in_range = not _tiles.is_empty() and get_current_distance() <= 0
+	_hit_line.color = COLOR_HIT_LINE_ACTIVE if in_range else COLOR_HIT_LINE
+
+
+# touche à taper : {key, enemy} ou {} s'il n'y en a pas
+func get_current() -> Dictionary:
+	return _tiles[0] if not _tiles.is_empty() else {}
+
+
+func get_next_key() -> String:
+	return _tiles[1].key if _tiles.size() > 1 else ""
+
+
+# distance entre la zone de frappe et l'ennemi de la touche à taper
+func get_current_distance() -> float:
+	if _tiles.is_empty() or not _player or not is_instance_valid(_tiles[0].enemy):
+		return INF
+	return _player.distance_to_hit(_tiles[0].enemy)
 
 
 func add_enemy(enemy: Enemy):
@@ -33,7 +87,7 @@ func add_enemy(enemy: Enemy):
 		tile.position = Vector2(size.x + 10, TILE_Y)
 		_tiles_container.add_child(tile)
 		_tiles.append({"node": tile, "enemy": enemy, "key": key})
-	_layout()
+	_refresh_current()
 
 
 # la première touche vient d'être tapée correctement : la tuile passe au vert,
@@ -41,7 +95,8 @@ func add_enemy(enemy: Enemy):
 func pop_key():
 	if _tiles.is_empty():
 		return
-	var tile: Panel = _tiles.pop_front().node
+	var tile_data = _tiles.pop_front()
+	var tile: Panel = tile_data.node
 	# hors du conteneur qui découpe son contenu, pour pouvoir sortir de la bande
 	tile.reparent(self)
 	tile.z_index = 1
@@ -60,7 +115,8 @@ func pop_key():
 	tween.chain().tween_callback(tile.queue_free)
 
 	_burst(tile.position + TILE_SIZE / 2)
-	_layout()
+	_refresh_current()
+	key_validated.emit(tile_data.key)
 
 
 func _burst(center: Vector2):
@@ -90,9 +146,10 @@ func too_early():
 	tween.tween_property(tile, "position:y", TILE_Y - 5, 0.07).set_ease(Tween.EASE_OUT)
 	tween.tween_property(tile, "position:y", TILE_Y, 0.1).set_ease(Tween.EASE_IN)
 	tween.tween_callback(_refresh_current)
+	key_too_early.emit(_tiles[0].key)
 
 
-# l'ennemi a disparu (il a atteint le joueur) : on retire ses touches
+# l'ennemi a disparu : on retire ses touches
 func remove_enemy(enemy: Enemy):
 	for tile_data in _tiles.duplicate():
 		if tile_data.enemy == enemy:
@@ -101,26 +158,27 @@ func remove_enemy(enemy: Enemy):
 			var tween = tile.create_tween()
 			tween.tween_property(tile, "modulate", Color(1, 0, 0, 0), 0.25)
 			tween.tween_callback(tile.queue_free)
-	_layout()
+	_refresh_current()
 
 
+# mauvaise touche : la tuile tremble (rotation, la position x suit la piste)
 func wrong_key():
 	if _tiles.is_empty():
 		return
 	var tile: Panel = _tiles[0].node
-	var base_x = tile.position.x
-	var tween = tile.create_tween()
+	tile.pivot_offset = TILE_SIZE / 2
 	tile.get_theme_stylebox("panel").border_color = COLOR_WRONG
-	for offset in [-3, 3, -2, 2, 0]:
-		tween.tween_property(tile, "position:x", base_x + offset, 0.03)
+	var tween = tile.create_tween()
+	for angle in [-0.3, 0.3, -0.2, 0.2, 0.0]:
+		tween.tween_property(tile, "rotation", angle, 0.03)
 	tween.tween_callback(_refresh_current)
+	key_missed.emit(_tiles[0].key)
 
 
 func clear():
 	for tile_data in _tiles:
 		tile_data.node.queue_free()
 	_tiles.clear()
-	_layout()
 
 
 func _create_tile(key: String) -> Panel:
@@ -142,21 +200,6 @@ func _create_tile(key: String) -> Panel:
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	tile.add_child(label)
 	return tile
-
-
-func _layout():
-	var x = START_X
-	var previous_enemy = null
-	for i in _tiles.size():
-		var tile_data = _tiles[i]
-		if previous_enemy != null and tile_data.enemy != previous_enemy:
-			x += GROUP_SPACING
-		previous_enemy = tile_data.enemy
-		var tile: Panel = tile_data.node
-		var tween = tile.create_tween()
-		tween.tween_property(tile, "position", Vector2(x, TILE_Y), 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		x += TILE_SPACING
-	_refresh_current()
 
 
 func _refresh_current():

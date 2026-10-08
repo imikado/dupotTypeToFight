@@ -7,36 +7,100 @@
 
 [node name="Background" type="Node2D"]
 
-[node name="SkyColor" type="ColorRect" parent="."]
+[node name="SkyColor" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0, 0)
+
+[node name="ColorRect" type="ColorRect" parent="SkyColor"]
 offset_right = 480.0
 offset_bottom = 270.0
 mouse_filter = 2
 color = Color(0, 0.196078, 0.290196, 1)
 
-[node name="Sky" type="TextureRect" parent="."]
+[node name="Sky" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.05, 0)
+repeat_size = Vector2(620, 0)
+
+[node name="TextureRect" type="TextureRect" parent="Sky"]
 offset_right = 620.0
 offset_bottom = 120.0
 mouse_filter = 2
 texture = ExtResource("1_sky")
 
-[node name="Ground" type="TextureRect" parent="."]
+[node name="FarTrees" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 0)
+repeat_size = Vector2(465, 0)
+
+[node name="TextureRect" type="TextureRect" parent="FarTrees"]
+modulate = Color(0.45, 0.6, 0.7, 1)
+offset_top = 92.0
+offset_right = 620.0
+offset_bottom = 155.0
+scale = Vector2(0.75, 0.75)
+mouse_filter = 2
+texture = ExtResource("2_trees")
+
+[node name="Ground" type="ColorRect" parent="FarTrees"]
+offset_top = 138.0
+offset_right = 465.0
+offset_bottom = 152.0
+mouse_filter = 2
+color = Color(0.0352941, 0.192157, 0.137255, 1)
+
+[node name="NearTrees" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.5, 0)
+repeat_size = Vector2(620, 0)
+
+[node name="TextureRect" type="TextureRect" parent="NearTrees"]
+offset_top = 90.0
+offset_right = 620.0
+offset_bottom = 153.0
+mouse_filter = 2
+texture = ExtResource("2_trees")
+
+[node name="NearGround" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.5, 0)
+repeat_size = Vector2(576, 0)
+
+[node name="TextureRect" type="TextureRect" parent="NearGround"]
+modulate = Color(0.7, 0.75, 0.7, 1)
 offset_top = 150.0
-offset_right = 480.0
+offset_right = 576.0
+offset_bottom = 168.0
+mouse_filter = 2
+texture = ExtResource("3_ground")
+stretch_mode = 1
+
+[node name="Ground" type="Parallax2D" parent="."]
+repeat_size = Vector2(576, 0)
+
+[node name="TextureRect" type="TextureRect" parent="Ground"]
+offset_top = 165.0
+offset_right = 576.0
 offset_bottom = 270.0
 mouse_filter = 2
 texture = ExtResource("3_ground")
 stretch_mode = 1
 
-[node name="Trees" type="TextureRect" parent="."]
-offset_top = 92.0
-offset_right = 620.0
-offset_bottom = 155.0
-mouse_filter = 2
-texture = ExtResource("2_trees")
+[node name="Brushes" type="Parallax2D" parent="."]
+repeat_size = Vector2(620, 0)
 
-[node name="Brushes" type="TextureRect" parent="."]
-offset_top = 146.0
+[node name="TextureRect" type="TextureRect" parent="Brushes"]
+offset_top = 152.0
 offset_right = 620.0
-offset_bottom = 164.0
+offset_bottom = 170.0
+mouse_filter = 2
+texture = ExtResource("4_brushes")
+
+[node name="Foreground" type="Parallax2D" parent="."]
+z_index = 10
+scroll_scale = Vector2(1.5, 0)
+repeat_size = Vector2(1240, 0)
+
+[node name="TextureRect" type="TextureRect" parent="Foreground"]
+modulate = Color(0.35, 0.4, 0.35, 1)
+offset_top = 196.0
+offset_right = 620.0
+offset_bottom = 214.0
+scale = Vector2(2, 2)
 mouse_filter = 2
 texture = ExtResource("4_brushes")

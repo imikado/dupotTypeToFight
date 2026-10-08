@@ -20,10 +20,12 @@ menu_scene_path = "res://src/UI/Screens/Menu.tscn"
 [node name="Player" parent="." unique_id=1650618208 instance=ExtResource("3_player")]
 position = Vector2(170, 170)
 
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(240, 135)
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
 [node name="Enemies" type="Node2D" parent="." unique_id=952472383]
 
-[node name="SpawnTimer" type="Timer" parent="." unique_id=1402320325]
 
 [node name="Hud" parent="." unique_id=101069319 instance=ExtResource("9_hud")]
-
-[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

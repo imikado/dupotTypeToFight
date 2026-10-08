@@ -15,6 +15,7 @@ const LIFE_LOW_RATIO := 0.3
 @onready var key_track = $KeyTrack
 @onready var keyboard_overlay = $KeyboardOverlay
 @onready var level_stats = $LevelStats
+@onready var _key_prompt = $KeyPrompt
 
 @onready var _life_bar: ProgressBar = $LifeBar
 @onready var _score_label: Label = $ScoreLabel
@@ -45,6 +46,7 @@ func _ready():
 	_on_score_changed(GlobalPlayer.get_score())
 	_on_combo_changed(GlobalPlayer.get_combo())
 	_banner.modulate.a = 0
+	_key_prompt.setup(key_track, keyboard_overlay)
 	_pause_panel.visible = false
 
 

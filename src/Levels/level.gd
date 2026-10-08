@@ -4,10 +4,26 @@ extends Node2D
 @export var game_over_scene: PackedScene
 @export_file("*.tscn") var menu_scene_path: String
 
-const SPAWN_X := 520.0
+# positions à l'écran (la caméra suit le joueur, qui reste à gauche de l'écran)
+const PLAYER_SCREEN_X := 170.0
+const SPAWN_SCREEN_X := 500.0
 # au-delà, l'ennemi n'est pas encore à l'écran : pas de ruée possible
-const DASH_MAX_X := 460.0
+const DASH_MAX_SCREEN_X := 460.0
+# le joueur court tant que le premier ennemi est plus loin que ça
+const RUN_STOP_DISTANCE := 120.0
 const MAX_ENEMIES := 5
+# flux régulier d'ennemis : un toutes les SPAWN_INTERVAL secondes (plus court aux
+# niveaux élevés), tout de suite si l'écran est vide ; une apparition retardée
+# (écran plein) a lieu dès qu'une place se libère
+const SPAWN_INTERVAL_START := 2.2
+const SPAWN_INTERVAL_PER_LEVEL := 0.12
+const SPAWN_INTERVAL_MIN := 0.9
+# variation aléatoire de l'intervalle, pour un rythme naturel mais régulier
+const SPAWN_INTERVAL_JITTER := 0.15
+# délai minimal entre deux apparitions, même quand l'écran se vide
+const SPAWN_MIN_DELAY := 0.4
+# écart minimal avec le dernier ennemi au point d'apparition
+const SPAWN_MIN_SPACING := 40.0
 const LEVEL_UP_HEAL := 20
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
 const READY_KEYS := ["f", "j"]
@@ -21,7 +37,7 @@ signal stats_closed
 
 @onready var _player = $Player
 @onready var _enemies: Node2D = $Enemies
-@onready var _spawn_timer: Timer = $SpawnTimer
+@onready var _camera: Camera2D = $Camera2D
 @onready var _hud = $Hud
 @onready var _key_track = $Hud.key_track
 
@@ -33,6 +49,8 @@ var _is_gameover := false
 var _is_level_starting := false
 # assez d'ennemis tués : on attend que la file se vide avant le niveau suivant
 var _is_level_complete := false
+var _spawn_cooldown := 0.0
+var _time_since_spawn := 0.0
 var _is_waiting_ready := false
 var _ready_pressed: Array = []
 var _is_showing_stats := false
@@ -50,10 +68,31 @@ func _ready():
 	GlobalEvents.enemy_attack_player.connect(_on_enemy_attack_player)
 	GlobalEvents.player_gameover.connect(_on_player_gameover)
 	_player.gameover_animation_finished.connect(_on_player_gameover_animation_finished)
+	_key_track.set_player(_player)
 	_hud.resume_requested.connect(_set_paused.bind(false))
 	_hud.menu_requested.connect(_go_to_menu)
 
 	_start_level(GlobalGame.getLevel())
+
+
+func _process(_delta):
+	_camera.position.x = _screen_left() + get_viewport_rect().size.x / 2
+
+
+func _physics_process(delta):
+	var is_playing = not (_is_gameover or _is_level_starting or _is_showing_stats)
+	var enemy_near = not _queue.is_empty() and _queue[0].position.x - _player.position.x < RUN_STOP_DISTANCE
+	if is_playing:
+		_update_spawn(delta)
+	if is_playing and not enemy_near:
+		_player.run(delta)
+	else:
+		_player.stop_running()
+
+
+# bord gauche de l'écran dans le monde : le joueur y est toujours à PLAYER_SCREEN_X
+func _screen_left() -> float:
+	return _player.position.x - PLAYER_SCREEN_X
 
 
 func _unhandled_input(event):
@@ -107,7 +146,6 @@ func _start_level(level: int, focus_keys: Array = []):
 		subtitle = tr("LEVEL_FOCUS_KEYS") % " ".join(focus_keys).to_upper()
 
 	_is_level_starting = true
-	_spawn_timer.stop()
 	_hud.show_banner(tr("LEVEL") % level, subtitle)
 	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, READY_KEYS)
 
@@ -120,11 +158,6 @@ func _start_level(level: int, focus_keys: Array = []):
 	_hud.keyboard_overlay.hide_keyboard()
 	await _hud.hide_banner()
 	_is_level_starting = false
-	if _is_gameover:
-		return
-	_spawn_timer.wait_time = _get_spawn_interval()
-	_spawn_timer.start()
-	_spawn_enemy()
 
 
 func _on_ready_key_typed(typed: String):
@@ -142,7 +175,28 @@ func _get_kills_to_pass() -> int:
 
 
 func _get_spawn_interval() -> float:
-	return max(1.2, 3.6 - 0.2 * _level)
+	return max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - SPAWN_INTERVAL_PER_LEVEL * (_level - 1))
+
+
+func _update_spawn(delta: float):
+	_spawn_cooldown -= delta
+	_time_since_spawn += delta
+	if _is_level_complete or _queue.size() >= MAX_ENEMIES or _time_since_spawn < SPAWN_MIN_DELAY:
+		return
+	var spawn_x = _screen_left() + SPAWN_SCREEN_X
+	if not _queue.is_empty() and spawn_x - _queue.back().position.x < SPAWN_MIN_SPACING:
+		return
+	if _spawn_cooldown <= 0 or not _has_enemy_incoming():
+		_spawn_enemy()
+
+
+# un ennemi est à l'écran ou sur le point d'y entrer (juste apparu à droite)
+func _has_enemy_incoming() -> bool:
+	var limit_x = _screen_left() + SPAWN_SCREEN_X + 1
+	for enemy in _queue:
+		if enemy.position.x <= limit_x:
+			return true
+	return false
 
 
 func _get_speed_coef() -> float:
@@ -172,13 +226,15 @@ func _spawn_enemy():
 	for i in enemy.key_count:
 		keys.append(GlobalLessons.pick_key(_level, GlobalPlayer.get_weak_keys()))
 
-	enemy.position = Vector2(SPAWN_X, _player.position.y)
+	enemy.position = Vector2(_screen_left() + SPAWN_SCREEN_X, _player.position.y)
 	enemy.setup(keys, _player, _get_speed_coef())
 	if not _queue.is_empty():
 		enemy.front_enemy = _queue.back()
 
 	_enemies.add_child(enemy)
 	_queue.append(enemy)
+	_spawn_cooldown = _get_spawn_interval() * randf_range(1.0 - SPAWN_INTERVAL_JITTER, 1.0 + SPAWN_INTERVAL_JITTER)
+	_time_since_spawn = 0.0
 	_key_track.add_enemy(enemy)
 	GlobalEvents.enemy_spawned.emit(enemy)
 
@@ -201,7 +257,7 @@ func _on_key_typed(typed: String):
 	# bonne touche mais ennemi hors de portée : le joueur se rue sur lui s'il est
 	# à l'écran, sinon c'est un coup dans le vide
 	var must_dash = not _player.can_hit(target)
-	if must_dash and target.position.x > DASH_MAX_X:
+	if must_dash and target.position.x - _screen_left() > DASH_MAX_SCREEN_X:
 		GlobalPlayer.reset_combo()
 		_player.whiff()
 		_key_track.too_early()
@@ -242,7 +298,6 @@ func _on_enemy_die(enemy: Enemy):
 			# plus d'apparitions : le joueur finit les ennemis restants avant
 			# l'écran « Prêt ? » du niveau suivant
 			_is_level_complete = true
-			_spawn_timer.stop()
 
 	if _is_level_complete and _queue.is_empty() and not _is_showing_stats:
 		_end_level()
@@ -287,7 +342,6 @@ func _end_level():
 
 func _on_player_gameover():
 	_is_gameover = true
-	_spawn_timer.stop()
 	GlobalGame.saveHighScore(GlobalPlayer.get_score(), _level)
 
 
@@ -306,7 +360,3 @@ func _set_paused(paused: bool):
 func _go_to_menu():
 	get_tree().paused = false
 	GlobalTransition.change_scene_to_packed(load(menu_scene_path))
-
-
-func _on_spawn_timer_timeout():
-	_spawn_enemy()
