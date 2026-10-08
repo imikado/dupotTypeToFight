@@ -239,6 +239,7 @@ text = "RESUME"
 layout_mode = 2
 text = "BACK_TO_MENU"
 
+
 [connection signal="pressed" from="PausePanel/VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PausePanel/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]
 [connection signal="toggled" from="KeyboardButton" to="." method="_on_keyboard_button_toggled"]

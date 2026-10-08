@@ -24,12 +24,13 @@ Free · All ages · Play in your browser · Made with Godot 4.7
 
 Enemies keep coming from the right. The next key to type **falls in the center of the screen**: type it to strike the enemy, or rush towards it if it is still far away. Miss too often and they will reach you!
 
+- 🎓 **Tutorial before playing**: where to put your hands, the small bumps on F and J, one finger per color, shown with zoomed keys and pixel art hands (with a Skip button, and it can be turned off in the settings)
 - 🎯 **Progressive lessons**: start with the **F** and **J** home keys, then D K, S L, Q M, G H, the top row and the bottom row, in **AZERTY** or **QWERTY**
 - 🖐️ **One color per finger**: warm colors for the left hand, complementary colors for the right hand, darker on the top row and lighter on the bottom row
 - 🥁 **Rhythm-game feel**: the key falls in the center with an approach ring, the next keys slide along the lane at the bottom of the screen
 - ✅ **Get ready**: each level starts by placing your index fingers on F and J and finding the new keys
 - ❌ **Learn from mistakes**: a keyboard shows the wrong key and the expected one, and your weak keys come back more often until you master them
-- 📊 **Earn your progress**: 94% accuracy is needed to unlock the next level, with live per-key stats and a recap at the end of each level
+- 📊 **Earn your progress**: 94% accuracy is needed to unlock the next level (or 90%, 80%, 70% in the settings), with live per-key stats and a recap at the end of each level
 - 🏃 **Runner style**: the camera follows the player through an endless parallax forest
 - 🌍 Available in **English** and **French**
 
@@ -54,8 +55,9 @@ Enemies keep coming from the right. The next key to type **falls in the center o
 | Show / hide the small keyboard | `Tab` (or the keyboard button at the top) |
 | Continue after the level results | `Space` or `Enter` |
 | Pause | `Esc` |
+| Tutorial: next page / skip | `Space` or `Enter` / `Esc` |
 
-The keyboard layout (AZERTY / QWERTY), the difficulty and the language are chosen in the main menu.
+The **Settings** of the main menu let you choose the difficulty, the keyboard layout (AZERTY / QWERTY), the language, the accuracy needed to pass a level (94%, 90%, 80% or 70%) and whether the tutorial is shown before level 1.
 
 ## 📦 Play
 
@@ -65,7 +67,7 @@ Play it in your browser, no install needed: **[dupot-org.itch.io/type-to-fight](
 
 ### Flathub and Snap Store (Linux): coming soon
 
-Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `dupot-type-to-fight` on the Snap Store). The packaging files are already in `export/Linux`; publication is waiting for the final logo.
+Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `dupot-type-to-fight` on the Snap Store). The packaging files and the icon are ready in `export/Linux`; they will be published soon.
 
 ## 🛠️ Build from source
 
@@ -84,6 +86,9 @@ Export presets for **Linux** and **HTML5** are included in `export_presets.cfg`,
 | `./bundle.sh` | `export/Linux/bundle.tar.gz` for the Flathub manifest (pck, icons, appdata, .desktop) |
 | `./export/Linux/snap/update-version.sh` | syncs the snap version with `config/version` in `project.godot` |
 | `./export/Linux/snap/build-snap.sh` | exports the Linux build and packs the snap |
+| `python3 tools/generate_icon.py` | regenerates the game icon in the dupot.org style (Flathub sizes, `icon.png`, snap icon) from the player sprite; needs Pillow |
+| `python3 tools/generate_itch_cover.py` | regenerates the itch.io cover image (630x500) in `export/itch/cover.png` from the game assets; needs Pillow |
+| `python3 tools/generate_tutorial_hands.py` | regenerates the pixel art hands of the tutorial (`src/UI/Hands/hand-left.png`, `hand-right.png`); needs Pillow |
 
 ## 🌍 Translations
 
@@ -94,9 +99,12 @@ Texts live in `src/Locales/translations.csv` (one column per language). To add a
 - `src/Autoload`: global state (game, player, lessons and finger colors, events, transition)
 - `src/Actors`: player and enemies (ant, spider, beetle)
 - `src/Levels`: main level and parallax background
-- `src/UI`: HUD, key lane, center key, keyboards, level results, screens (boot, menu, game over)
+- `src/UI`: HUD, key lane, center key, keyboards, level results, tutorial, screens (boot, menu with settings, tutorial, game over)
 - `src/Locales`: translations
+- `tools`: Python scripts generating the icon, the itch.io cover and the tutorial hands
+- `docs`: gameplay GIFs
 - `export/Linux`: Flathub and Snap packaging files, store screenshots
+- `export/itch`: itch.io cover image
 
 Sprites and font come from Beat And Match To Pass.
 

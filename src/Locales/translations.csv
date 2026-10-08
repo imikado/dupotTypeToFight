@@ -31,3 +31,25 @@ STATS_REQUIRED,%d%% accuracy needed to move on,Il faut %d %% de précision pour 
 STATS_CONTINUE,Press SPACE to continue,Appuie sur ESPACE pour continuer
 LEVEL_FOCUS_KEYS,Practice: %s,Entrainement : %s
 SHOW_KEYBOARD,Show the keyboard (Tab),Afficher le clavier (Tab)
+SETTINGS,Settings,Paramètres
+SETTINGS_DIFFICULTY,Difficulty,Difficulté
+SETTINGS_KEYBOARD,Keyboard,Clavier
+SETTINGS_LANGUAGE,Language,Langue
+SETTINGS_ACCURACY,Pass score,Précision requise
+BACK,Back,Retour
+TUTO_SKIP,Skip,Passer
+TUTO_NEXT,Next,Suivant
+TUTO_HINT,Space: next   Esc: skip,Espace : suivant   Echap : passer
+TUTO_BUMPS_TITLE,Find F and J,Trouve F et J
+TUTO_BUMPS_TEXT,The F and J keys have a small bump: you can find them with your index fingers without looking at the keyboard.,Les touches F et J ont un petit ergot en relief : tes index les trouvent sans regarder le clavier.
+TUTO_HOME_TITLE,Starting position,Position de départ
+TUTO_HOME_TEXT,"Left index finger on F, right index finger on J. The other fingers rest on the keys next to them, thumbs on the space bar.","Index gauche sur F, index droit sur J. Les autres doigts se posent sur les touches voisines, les pouces sur la barre d'espace."
+TUTO_COLORS_TITLE,"One finger, one color","Un doigt, une couleur"
+TUTO_COLORS_TEXT,"Each finger types the keys of its color, then goes back to its resting key on the middle row.","Chaque doigt tape les touches de sa couleur, puis revient sur sa touche de repos, sur la rangée du milieu."
+TUTO_LEFT_HAND,Left hand,Main gauche
+TUTO_RIGHT_HAND,Right hand,Main droite
+TUTO_PLAY_TITLE,Type to strike!,Tape pour frapper !
+TUTO_PLAY_TEXT,"Type the key falling in the center of the screen: your hero strikes the enemy. Keep your eyes on the screen, not on the keyboard!","Tape la touche qui tombe au centre de l'écran : ton héros frappe l'ennemi. Garde les yeux sur l'écran, pas sur le clavier !"
+SETTINGS_TUTORIAL,Tutorial,Tutoriel
+YES,Yes,Oui
+NO,No,Non

@@ -29,6 +29,13 @@ var _language := DEFAULT_LANGUAGE
 # petit clavier permanent en bas de l'écran pendant le jeu
 var _show_keyboard := false
 
+# précision minimale pour passer au niveau suivant (choix dans les paramètres)
+const REQUIRED_ACCURACY_CHOICES := [0.94, 0.9, 0.8, 0.7]
+var _required_accuracy := 0.94
+
+# tutoriel sur la position des mains avant le niveau 1 (désactivable dans les paramètres)
+var _tutorial_enabled := true
+
 var currentLevel = 1
 
 
@@ -88,6 +95,24 @@ func loadLanguage(language: String):
 	saveSettings()
 
 
+func isTutorialEnabled() -> bool:
+	return _tutorial_enabled
+
+
+func setTutorialEnabled(enabled: bool):
+	_tutorial_enabled = enabled
+	saveSettings()
+
+
+func getRequiredAccuracy() -> float:
+	return _required_accuracy
+
+
+func setRequiredAccuracy(required_accuracy: float):
+	_required_accuracy = required_accuracy
+	saveSettings()
+
+
 func isKeyboardShown() -> bool:
 	return _show_keyboard
 
@@ -103,7 +128,7 @@ func resetGame():
 
 
 func saveSettings():
-	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language, "show_keyboard": _show_keyboard}
+	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language, "show_keyboard": _show_keyboard, "required_accuracy": _required_accuracy, "tutorial": _tutorial_enabled}
 	saveFile(PATH_SETTINGS, JSON.stringify(settings))
 
 
@@ -115,6 +140,10 @@ func loadSettings():
 		return
 	_keyboard_layout = int(parsed.get("layout", KEYBOARD_LAYOUT.AZERTY)) as KEYBOARD_LAYOUT
 	_show_keyboard = bool(parsed.get("show_keyboard", false))
+	_tutorial_enabled = bool(parsed.get("tutorial", true))
+	var required_accuracy = float(parsed.get("required_accuracy", _required_accuracy))
+	if REQUIRED_ACCURACY_CHOICES.has(required_accuracy):
+		_required_accuracy = required_accuracy
 	var language = parsed.get("language", _language)
 	if LANGUAGES.has(language):
 		_language = language

@@ -30,8 +30,6 @@ const LEVEL_UP_HEAL := 20
 const HOME_KEYS := ["f", "j"]
 # durée d'affichage du clavier en transparence au début du niveau
 const LAYOUT_DURATION := 4.0
-# précision minimale pour passer au niveau suivant ; en dessous, le niveau est rejoué
-const REQUIRED_ACCURACY := 0.94
 # nombre de touches ratées montrées dans le bilan
 const MISSED_KEYS_SHOWN := 3
 
@@ -335,14 +333,16 @@ func get_accuracy() -> float:
 # le niveau en insistant sur les touches ratées
 func _end_level():
 	var accuracy = get_accuracy()
-	var passed = accuracy >= REQUIRED_ACCURACY
+	# précision minimale choisie dans les paramètres ; en dessous, le niveau est rejoué
+	var required_accuracy = GlobalGame.getRequiredAccuracy()
+	var passed = accuracy >= required_accuracy
 	var missed_keys = _missed.keys()
 	missed_keys.sort_custom(func(a, b): return _missed[a] > _missed[b])
 	missed_keys = missed_keys.slice(0, MISSED_KEYS_SHOWN)
 
 	_is_showing_stats = true
 	_can_close_stats = false
-	await _hud.level_stats.show_stats(passed, accuracy, REQUIRED_ACCURACY, _good_keys, _errors, missed_keys)
+	await _hud.level_stats.show_stats(passed, accuracy, required_accuracy, _good_keys, _errors, missed_keys)
 	_can_close_stats = true
 	await stats_closed
 	_is_showing_stats = false

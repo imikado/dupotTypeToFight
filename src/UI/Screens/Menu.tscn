@@ -1,10 +1,22 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://src/UI/Screens/Menu.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://src/Levels/Shared/background.tscn" id="2_background"]
 [ext_resource type="PackedScene" path="res://src/Actors/Players/Player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://src/Actors/Enemies/Ant/ant.tscn" id="4_ant"]
 [ext_resource type="PackedScene" path="res://src/Levels/level.tscn" id="5_level"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings"]
+bg_color = Color(0.0627451, 0.0862745, 0.2, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.34, 0.39, 0.73, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -15,6 +27,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 mainLevel = ExtResource("5_level")
+tutorial_scene_path = "res://src/UI/Screens/tutorial_screen.tscn"
 
 [node name="Background" parent="." instance=ExtResource("2_background")]
 
@@ -67,35 +80,9 @@ theme_override_constants/separation = 4
 layout_mode = 2
 text = "MENU_PLAY"
 
-[node name="Difficulty" type="OptionButton" parent="Menu"]
+[node name="SettingsButton" type="Button" parent="Menu"]
 layout_mode = 2
-alignment = 1
-selected = 0
-item_count = 2
-popup/item_0/text = "DIFFICULTY_EASY"
-popup/item_0/id = 0
-popup/item_1/text = "DIFFICULTY_NORMAL"
-popup/item_1/id = 1
-
-[node name="Layout" type="OptionButton" parent="Menu"]
-layout_mode = 2
-alignment = 1
-selected = 0
-item_count = 2
-popup/item_0/text = "KEYBOARD_AZERTY"
-popup/item_0/id = 0
-popup/item_1/text = "KEYBOARD_QWERTY"
-popup/item_1/id = 1
-
-[node name="Language" type="OptionButton" parent="Menu"]
-layout_mode = 2
-alignment = 1
-selected = 0
-item_count = 2
-popup/item_0/text = "English"
-popup/item_0/id = 0
-popup/item_1/text = "Français"
-popup/item_1/id = 1
+text = "SETTINGS"
 
 [node name="QuitButton" type="Button" parent="Menu"]
 layout_mode = 2
@@ -136,8 +123,145 @@ text = "www.dupot.org"
 underline = 1
 uri = "https://www.dupot.org"
 
+[node name="SettingsPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -134.0
+offset_top = -70.0
+offset_right = 134.0
+offset_bottom = 112.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_settings")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 3
+
+[node name="Title" type="Label" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 8
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="Grid" type="GridContainer" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 1
+columns = 2
+
+[node name="DifficultyLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_DIFFICULTY"
+vertical_alignment = 1
+
+[node name="Difficulty" type="OptionButton" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "DIFFICULTY_EASY"
+popup/item_0/id = 0
+popup/item_1/text = "DIFFICULTY_NORMAL"
+popup/item_1/id = 1
+
+[node name="LayoutLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_KEYBOARD"
+vertical_alignment = 1
+
+[node name="Layout" type="OptionButton" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "KEYBOARD_AZERTY"
+popup/item_0/id = 0
+popup/item_1/text = "KEYBOARD_QWERTY"
+popup/item_1/id = 1
+
+[node name="LanguageLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_LANGUAGE"
+vertical_alignment = 1
+
+[node name="Language" type="OptionButton" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Français"
+popup/item_1/id = 1
+
+[node name="AccuracyLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_ACCURACY"
+vertical_alignment = 1
+
+[node name="RequiredAccuracy" type="OptionButton" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "94%"
+popup/item_0/id = 0
+popup/item_1/text = "90%"
+popup/item_1/id = 1
+popup/item_2/text = "80%"
+popup/item_2/id = 2
+popup/item_3/text = "70%"
+popup/item_3/id = 3
+
+[node name="TutorialLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_TUTORIAL"
+vertical_alignment = 1
+
+[node name="Tutorial" type="OptionButton" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "YES"
+popup/item_0/id = 0
+popup/item_1/text = "NO"
+popup/item_1/id = 1
+
+[node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
 [connection signal="pressed" from="Menu/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="item_selected" from="Menu/Difficulty" to="." method="_on_difficulty_item_selected"]
-[connection signal="item_selected" from="Menu/Layout" to="." method="_on_layout_item_selected"]
-[connection signal="item_selected" from="Menu/Language" to="." method="_on_language_item_selected"]
+[connection signal="pressed" from="Menu/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Difficulty" to="." method="_on_difficulty_item_selected"]
+[connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Layout" to="." method="_on_layout_item_selected"]
+[connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Language" to="." method="_on_language_item_selected"]
 [connection signal="pressed" from="Menu/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/RequiredAccuracy" to="." method="_on_required_accuracy_item_selected"]
+[connection signal="pressed" from="SettingsPanel/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Tutorial" to="." method="_on_tutorial_item_selected"]
