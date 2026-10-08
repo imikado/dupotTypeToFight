@@ -187,7 +187,7 @@ func _create_tile(key: String) -> Panel:
 	var tile := Panel.new()
 	tile.size = TILE_SIZE
 	var style := StyleBoxFlat.new()
-	var finger_color = GlobalLessons.get_finger_color(key)
+	var finger_color = GlobalLessons.get_key_color(key)
 	style.bg_color = finger_color.darkened(TILE_DARKEN)
 	style.border_color = finger_color
 	style.set_border_width_all(2)
@@ -214,5 +214,5 @@ func _refresh_current():
 	for i in _tiles.size():
 		var tile: Panel = _tiles[i].node
 		var style: StyleBoxFlat = tile.get_theme_stylebox("panel")
-		style.border_color = COLOR_CURRENT if i == 0 else GlobalLessons.get_finger_color(_tiles[i].key)
+		style.border_color = COLOR_CURRENT if i == 0 else GlobalLessons.get_key_color(_tiles[i].key)
 		style.set_border_width_all(3 if i == 0 else 2)

@@ -49,7 +49,7 @@ func show_stats(passed: bool, accuracy: float, required: float, good: int, error
 	else:
 		var keys_text := ""
 		for key in missed_keys:
-			keys_text += "[color=#%s]%s[/color] " % [GlobalLessons.get_finger_color(key).to_html(false), key.to_upper()]
+			keys_text += "[color=#%s]%s[/color] " % [GlobalLessons.get_key_color(key).to_html(false), key.to_upper()]
 		_missed_label.text = "[center]%s[/center]" % (tr("STATS_MISSED_KEYS") % keys_text.strip_edges())
 
 	_result_label.text = tr("STATS_NEXT_LEVEL") if passed else tr("STATS_REQUIRED") % roundi(required * 100)

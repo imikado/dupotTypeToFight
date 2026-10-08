@@ -4,10 +4,6 @@ extends Control
 # jeu ou avec Tab) : touches du niveau dans la couleur de leur doigt, touches pas
 # encore apprises estompées, touche à taper bordée de blanc.
 
-const ROWS := {
-	0: ["azertyuiop", "qsdfghjklm", "wxcvbn"],  # GlobalGame.KEYBOARD_LAYOUT.AZERTY
-	1: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],  # GlobalGame.KEYBOARD_LAYOUT.QWERTY
-}
 const ROW_OFFSETS := [0.0, 3.0, 8.0]
 const KEY_SIZE := Vector2(10, 10)
 const KEY_SPACING := 11.0
@@ -60,7 +56,7 @@ func _draw():
 
 
 func _build_keys():
-	var rows = ROWS[GlobalGame.getKeyboardLayout()]
+	var rows = GlobalLessons.get_keyboard_rows()
 	for row_index in rows.size():
 		var row: String = rows[row_index]
 		for i in row.length():
@@ -92,7 +88,7 @@ func _refresh():
 	for key in _keys:
 		var style: StyleBoxFlat = _keys[key].style
 		var panel: Panel = _keys[key].panel
-		var finger_color = GlobalLessons.get_finger_color(key)
+		var finger_color = GlobalLessons.get_key_color(key)
 		if key == _current_key:
 			style.bg_color = finger_color
 			style.border_color = Color.WHITE

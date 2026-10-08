@@ -72,7 +72,7 @@ func _process(delta):
 		_approach = 1.0 - clamp(distance / APPROACH_DISTANCE, 0.0, 1.0)
 		var next_key = _key_track.get_next_key()
 		_next_letter.text = next_key.to_upper()
-		_next_letter.add_theme_color_override("font_color", GlobalLessons.get_finger_color(next_key) if next_key else Color.WHITE)
+		_next_letter.add_theme_color_override("font_color", GlobalLessons.get_key_color(next_key) if next_key else Color.WHITE)
 	_flash_color.a = move_toward(_flash_color.a, 0.0, delta * 3)
 
 	var target_alpha = 0.0 if key.is_empty() and _gap <= 0 else 1.0
@@ -85,7 +85,7 @@ func _show_key(key: String):
 	if key.is_empty():
 		return
 	_letter.text = key.to_upper()
-	var finger_color = GlobalLessons.get_finger_color(key)
+	var finger_color = GlobalLessons.get_key_color(key)
 	_box_style.bg_color = finger_color.darkened(0.45)
 	_box_style.border_color = finger_color
 	# la nouvelle touche tombe du haut, puis s'écrase légèrement en arrivant
@@ -131,7 +131,7 @@ func _on_key_validated(validated_key: String):
 	# la touche validée explose ; le centre reste vide un court instant puis la
 	# suivante arrive, même si c'est la même lettre
 	var center = global_position + size / 2
-	var finger_color = GlobalLessons.get_finger_color(validated_key)
+	var finger_color = GlobalLessons.get_key_color(validated_key)
 	_explode_box(center, validated_key)
 	for i in EXPLOSION_SHARDS:
 		_spawn_shard(center, TAU * i / EXPLOSION_SHARDS, COLOR_GOOD if i % 2 == 0 else finger_color.lightened(0.3))

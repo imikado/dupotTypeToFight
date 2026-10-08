@@ -4,15 +4,12 @@ extends Control
 # - au début d'un niveau : les touches disponibles, colorées selon le doigt,
 #   les nouvelles bordées de blanc et animées ; le clavier reste affiché
 #   jusqu'à ce que le joueur appuie sur les touches « prêt » (F et J) ;
-# - quand le joueur se trompe : la touche tapée en rouge avec une croix, celle
-#   attendue en jaune avec une coche verte (pas de texte : pas le temps de lire).
+# - quand le joueur se trompe : le clavier garde les couleurs des touches du
+#   niveau ; la touche tapée passe en rouge avec une croix, celle attendue est
+#   mise en lumière avec une coche verte (pas de texte : pas le temps de lire).
 # Deux mains « curseur » en pixel art montrent où poser les index (F et J) :
 # elles tapotent les touches en début de niveau et restent immobiles en cas d'erreur.
 
-const ROWS := {
-	0: ["azertyuiop", "qsdfghjklm", "wxcvbn"],  # GlobalGame.KEYBOARD_LAYOUT.AZERTY
-	1: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],  # GlobalGame.KEYBOARD_LAYOUT.QWERTY
-}
 const ROW_OFFSETS := [0.0, 5.0, 14.0]
 
 const KEY_SIZE := Vector2(16, 16)
@@ -44,7 +41,6 @@ const AVAILABLE_DARKEN := 0.45
 const NEW_DARKEN := 0.1
 const COLOR_NEW_BORDER := Color.WHITE
 const COLOR_WRONG := Color(0.85, 0.1, 0.2, 0.95)
-const COLOR_EXPECTED := Color(1, 0.823529, 0.247059, 0.95)
 
 # pastilles d'erreur : croix sur la touche tapée, coche sur la touche attendue
 const BADGE_SIZE := 9.0
@@ -106,7 +102,7 @@ func _process(_delta):
 
 
 func _build_keys():
-	var rows = ROWS[GlobalGame.getKeyboardLayout()]
+	var rows = GlobalLessons.get_keyboard_rows()
 	var width = 0.0
 	for row_index in rows.size():
 		var row: String = rows[row_index]
@@ -168,6 +164,7 @@ func _reset_keys():
 		_keys[key].panel.modulate.a = 1.0
 		_keys[key].panel.scale = Vector2.ONE
 		_keys[key].panel.z_index = 0
+		_keys[key].panel.rotation = 0.0
 	self_modulate.a = 1.0
 	_layout_mode = false
 	_layout_current = ""
@@ -197,7 +194,7 @@ func show_level_keys(keys: Array, new_keys: Array, ready_keys: Array):
 	position.y = INTRO_Y
 	size.y = INTRO_HEIGHT
 	for key in _keys:
-		var finger_color = GlobalLessons.get_finger_color(key)
+		var finger_color = GlobalLessons.get_key_color(key)
 		if new_keys.has(key):
 			_paint(key, finger_color.darkened(NEW_DARKEN), COLOR_NEW_BORDER, 2)
 			_pulse(key)
@@ -235,7 +232,7 @@ func mark_ready_key(key: String):
 		_key_pulses[key].kill()
 		_key_pulses.erase(key)
 	var panel: Panel = _keys[key].panel
-	_paint(key, GlobalLessons.get_finger_color(key), COLOR_NEW_BORDER, 2)
+	_paint(key, GlobalLessons.get_key_color(key), COLOR_NEW_BORDER, 2)
 	panel.scale = Vector2(1.4, 1.4)
 	var tween = panel.create_tween()
 	tween.tween_property(panel, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -281,7 +278,7 @@ func _paint_layout_key(key: String, is_current: bool):
 	if not _keys.has(key):
 		return
 	var panel: Panel = _keys[key].panel
-	var finger_color = GlobalLessons.get_finger_color(key)
+	var finger_color = GlobalLessons.get_key_color(key)
 	if is_current:
 		_paint(key, finger_color, Color.WHITE, 2)
 		panel.modulate.a = 1.0
@@ -340,8 +337,28 @@ func _on_wrong_key(expected: String, typed: String):
 	if not _is_showing_level:
 		position.y = ERROR_Y
 		size.y = ERROR_HEIGHT
-	_paint(expected, COLOR_EXPECTED.darkened(0.4), COLOR_EXPECTED)
-	_paint(typed, COLOR_WRONG, COLOR_WRONG.lightened(0.3))
+	# mêmes couleurs que le clavier transparent, pour ne pas perdre ses repères
+	for key in _keys:
+		if _layout_keys.has(key):
+			var finger_color = GlobalLessons.get_key_color(key)
+			_paint(key, finger_color.darkened(AVAILABLE_DARKEN), finger_color)
+		else:
+			_keys[key].panel.modulate.a = DIM_ALPHA
+	var expected_panel: Panel = _keys[expected].panel if _keys.has(expected) else null
+	if expected_panel:
+		_paint(expected, GlobalLessons.get_key_color(expected), Color.WHITE, 2)
+		expected_panel.modulate.a = 1.0
+		expected_panel.z_index = 1
+		expected_panel.scale = Vector2.ONE * LAYOUT_CURRENT_SCALE
+	# bordure blanche et secousse : à ne pas confondre avec le rouge de l'auriculaire gauche
+	_paint(typed, COLOR_WRONG, Color.WHITE, 2)
+	if _keys.has(typed):
+		var typed_panel: Panel = _keys[typed].panel
+		typed_panel.modulate.a = 1.0
+		typed_panel.z_index = 1
+		var shake = typed_panel.create_tween()
+		for angle in [-0.25, 0.25, -0.15, 0.15, 0.0]:
+			shake.tween_property(typed_panel, "rotation", angle, 0.04)
 	_add_badge(typed, false)
 	_add_badge(expected, true)
 	set_message("", Color.WHITE)

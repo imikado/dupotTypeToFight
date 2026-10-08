@@ -86,7 +86,7 @@ func _draw():
 		var entry = _stats[key]
 		var origin = Vector2((i % COLUMNS) * ENTRY_SIZE.x, (i / COLUMNS) * ENTRY_SIZE.y) + Vector2(2, 2)
 
-		var finger_color = GlobalLessons.get_finger_color(key)
+		var finger_color = GlobalLessons.get_key_color(key)
 		_tile_style.bg_color = finger_color.darkened(TILE_DARKEN)
 		_tile_style.border_color = finger_color
 		var flash = entry.get("flash", 0.0)
