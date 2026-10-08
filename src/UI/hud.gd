@@ -16,6 +16,8 @@ const LIFE_LOW_RATIO := 0.3
 @onready var keyboard_overlay = $KeyboardOverlay
 @onready var level_stats = $LevelStats
 @onready var _key_prompt = $KeyPrompt
+@onready var _mini_keyboard = $MiniKeyboard
+@onready var _keyboard_button: Button = $KeyboardButton
 
 @onready var _life_bar: ProgressBar = $LifeBar
 @onready var _score_label: Label = $ScoreLabel
@@ -46,12 +48,17 @@ func _ready():
 	_on_score_changed(GlobalPlayer.get_score())
 	_on_combo_changed(GlobalPlayer.get_combo())
 	_banner.modulate.a = 0
-	_key_prompt.setup(key_track, keyboard_overlay)
+	_key_prompt.setup(key_track)
+	keyboard_overlay.set_key_track(key_track)
+	_mini_keyboard.setup(key_track)
+	_keyboard_button.button_pressed = GlobalGame.isKeyboardShown()
+	_mini_keyboard.visible = GlobalGame.isKeyboardShown()
 	_pause_panel.visible = false
 
 
 func set_level(level: int, keys: Array, new_keys: Array):
 	_level_label.text = tr("LEVEL") % level
+	_mini_keyboard.set_available_keys(keys)
 	var text := ""
 	for key in keys:
 		var letter = key.to_upper()
@@ -109,6 +116,16 @@ func _on_score_changed(new_value):
 func _on_combo_changed(new_value):
 	_combo_label.visible = new_value >= 5
 	_combo_label.text = "combo %d  x%d" % [new_value, GlobalPlayer.get_multiplier()]
+
+
+# petit clavier permanent en bas de l'écran (bouton en haut ou touche Tab)
+func toggle_keyboard():
+	_keyboard_button.button_pressed = not _keyboard_button.button_pressed
+
+
+func _on_keyboard_button_toggled(pressed: bool):
+	_mini_keyboard.visible = pressed
+	GlobalGame.setKeyboardShown(pressed)
 
 
 func _on_resume_button_pressed():

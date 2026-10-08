@@ -26,6 +26,8 @@ const LANGUAGES := ["en", "fr"]
 const DEFAULT_LANGUAGE := "en"
 
 var _language := DEFAULT_LANGUAGE
+# petit clavier permanent en bas de l'écran pendant le jeu
+var _show_keyboard := false
 
 var currentLevel = 1
 
@@ -86,13 +88,22 @@ func loadLanguage(language: String):
 	saveSettings()
 
 
+func isKeyboardShown() -> bool:
+	return _show_keyboard
+
+
+func setKeyboardShown(shown: bool):
+	_show_keyboard = shown
+	saveSettings()
+
+
 func resetGame():
 	currentLevel = 1
 	GlobalPlayer.reset_game()
 
 
 func saveSettings():
-	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language}
+	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language, "show_keyboard": _show_keyboard}
 	saveFile(PATH_SETTINGS, JSON.stringify(settings))
 
 
@@ -103,6 +114,7 @@ func loadSettings():
 	if not parsed is Dictionary:
 		return
 	_keyboard_layout = int(parsed.get("layout", KEYBOARD_LAYOUT.AZERTY)) as KEYBOARD_LAYOUT
+	_show_keyboard = bool(parsed.get("show_keyboard", false))
 	var language = parsed.get("language", _language)
 	if LANGUAGES.has(language):
 		_language = language

@@ -5,7 +5,7 @@ extends Node2D
 @export_file("*.tscn") var menu_scene_path: String
 
 # positions à l'écran (la caméra suit le joueur, qui reste à gauche de l'écran)
-const PLAYER_SCREEN_X := 170.0
+const PLAYER_SCREEN_X := 240.0
 const SPAWN_SCREEN_X := 500.0
 # au-delà, l'ennemi n'est pas encore à l'écran : pas de ruée possible
 const DASH_MAX_SCREEN_X := 460.0
@@ -27,6 +27,8 @@ const SPAWN_MIN_SPACING := 40.0
 const LEVEL_UP_HEAL := 20
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
 const READY_KEYS := ["f", "j"]
+# durée d'affichage du clavier en transparence au début du niveau
+const LAYOUT_DURATION := 4.0
 # précision minimale pour passer au niveau suivant ; en dessous, le niveau est rejoué
 const REQUIRED_ACCURACY := 0.94
 # nombre de touches ratées montrées dans le bilan
@@ -107,6 +109,11 @@ func _unhandled_input(event):
 	if _is_gameover or get_tree().paused:
 		return
 
+	if event.keycode == KEY_TAB:
+		_hud.toggle_keyboard()
+		get_viewport().set_input_as_handled()
+		return
+
 	if _is_showing_stats:
 		if _can_close_stats and event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
 			stats_closed.emit()
@@ -155,7 +162,8 @@ func _start_level(level: int, focus_keys: Array = []):
 	await player_ready
 	_hud.keyboard_overlay.set_message(tr("GO"), Color.WHITE)
 	await get_tree().create_timer(0.6).timeout
-	_hud.keyboard_overlay.hide_keyboard()
+	# le clavier reste quelques secondes en transparence pour voir la disposition
+	_hud.keyboard_overlay.show_layout(GlobalLessons.get_keys(level), LAYOUT_DURATION)
 	await _hud.hide_banner()
 	_is_level_starting = false
 

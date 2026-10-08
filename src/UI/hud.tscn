@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://src/UI/keyboard_overlay.tscn" id="4_keyboard"]
 [ext_resource type="PackedScene" path="res://src/UI/level_stats.tscn" id="5_stats"]
 [ext_resource type="PackedScene" path="res://src/UI/key_prompt.tscn" id="6_prompt"]
+[ext_resource type="Script" path="res://src/UI/mini_keyboard.gd" id="7_mini"]
+[ext_resource type="Texture2D" path="res://src/UI/Controls/Shared/icon-keyboard.png" id="8_icon_keyboard"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
 bg_color = Color(0.0627451, 0.0862745, 0.2, 0.8)
@@ -44,6 +46,17 @@ theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_life")
 value = 100.0
 show_percentage = false
+
+[node name="KeyboardButton" type="Button" parent="."]
+offset_left = 116.0
+offset_top = 3.0
+offset_right = 141.0
+offset_bottom = 19.0
+focus_mode = 0
+tooltip_text = "SHOW_KEYBOARD"
+toggle_mode = true
+icon = ExtResource("8_icon_keyboard")
+icon_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="."]
 anchors_preset = 5
@@ -118,9 +131,26 @@ autowrap_mode = 0
 
 [node name="KeyTrack" parent="." instance=ExtResource("3_track")]
 
-[node name="KeyPrompt" parent="." instance=ExtResource("6_prompt")]
+[node name="MiniKeyboard" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -40.0
+offset_right = -6.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("7_mini")
 
 [node name="KeyboardOverlay" parent="." instance=ExtResource("4_keyboard")]
+
+[node name="KeyPrompt" parent="." instance=ExtResource("6_prompt")]
 
 [node name="LevelStats" parent="." instance=ExtResource("5_stats")]
 
@@ -196,3 +226,4 @@ text = "BACK_TO_MENU"
 
 [connection signal="pressed" from="PausePanel/VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PausePanel/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="toggled" from="KeyboardButton" to="." method="_on_keyboard_button_toggled"]

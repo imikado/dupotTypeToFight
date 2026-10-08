@@ -13,8 +13,6 @@ LEVEL_ALL_KEYS,"All keys, faster!","Toutes les touches, plus vite !"
 READY,READY? Press %s,PRET ? Appuie sur %s
 AND,and,et
 GO,Let's go!,C'est parti !
-WRONG_KEY,%s instead of %s,%s au lieu de %s
-KEY_SPACE,SPACE,ESPACE
 PAUSE,Pause,Pause
 RESUME,Resume,Reprendre
 BACK_TO_MENU,Menu,Menu
@@ -32,3 +30,4 @@ STATS_NEXT_LEVEL,Next level unlocked,Niveau suivant débloqué
 STATS_REQUIRED,%d%% accuracy needed to move on,Il faut %d %% de précision pour avancer
 STATS_CONTINUE,Press SPACE to continue,Appuie sur ESPACE pour continuer
 LEVEL_FOCUS_KEYS,Practice: %s,Entrainement : %s
+SHOW_KEYBOARD,Show the keyboard (Tab),Afficher le clavier (Tab)
