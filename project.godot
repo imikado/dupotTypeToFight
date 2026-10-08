@@ -11,9 +11,10 @@ config_version=5
 [application]
 
 config/name="dupotTypeToFight"
+config/version="1.0.0"
 run/main_scene="res://src/UI/Screens/Boot.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
 
 [autoload]
 
@@ -35,6 +36,10 @@ window/vsync/vsync_mode=2
 [gui]
 
 theme/custom="res://src/UI/Theme.tres"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://src/Locales/translations.en.translation", "res://src/Locales/translations.fr.translation")
 
 [physics]
 

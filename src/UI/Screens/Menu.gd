@@ -7,6 +7,7 @@ extends Control
 @onready var _layout: OptionButton = $Menu/Layout
 @onready var _language: OptionButton = $Menu/Language
 @onready var _best_score_label: Label = $BestScoreLabel
+@onready var _quit_button: Button = $Menu/QuitButton
 @onready var _enemy: Enemy = $Ant
 
 
@@ -18,6 +19,9 @@ func _ready():
 	# l'ennemi du menu sert de décor : il ne doit pas avancer
 	_enemy.set_physics_process(false)
 	_enemy.setup(["f", "j"], null, 1)
+
+	# dans un navigateur (export HTML5), on ne peut pas quitter le jeu
+	_quit_button.visible = not OS.has_feature("web")
 
 	_difficulty.select(GlobalGame.getLevelDifficulty())
 	_layout.select(GlobalGame.getKeyboardLayout())

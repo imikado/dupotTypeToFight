@@ -23,3 +23,13 @@ mono_crash.*.json
 *.exe
 # Uncomment if your project does not version PCK files as runtime dependencies.
 # *.pck
+
+# Exports générés (les fichiers sources de paquets dans export/Linux restent suivis)
+export/HTML5
+export/Linux/bundle
+export/Linux/bundle.tar.gz
+export/Linux/*.pck
+export/Linux/*.x86_64
+export/Linux/snap/*.pck
+export/Linux/snap/*.x86_64
+export/Linux/snap/*.snap
