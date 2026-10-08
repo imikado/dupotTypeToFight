@@ -16,7 +16,6 @@ const COLOR_CURRENT := Color(1, 0.823529, 0.247059)
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 
 @onready var _tiles_container: Control = $Tiles
-@onready var _finger_label: Label = $FingerLabel
 
 # [{node, enemy, key}]
 var _tiles: Array = []
@@ -119,9 +118,3 @@ func _refresh_current():
 		var style: StyleBoxFlat = tile.get_theme_stylebox("panel")
 		style.border_color = COLOR_CURRENT if i == 0 else COLOR_BORDER
 		style.set_border_width_all(2 if i == 0 else 1)
-
-	if _tiles.is_empty():
-		_finger_label.text = ""
-		return
-	var key = _tiles[0].key
-	_finger_label.text = "%s : %s" % [key.to_upper(), GlobalLessons.get_finger(key).to_upper()]

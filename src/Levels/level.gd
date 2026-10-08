@@ -69,7 +69,7 @@ func _start_level(level: int):
 	_spawn_timer.stop()
 	# on laisse plus de temps pour lire le clavier quand de nouvelles touches arrivent
 	var banner_duration = 2.5 if new_keys.is_empty() else 4.0
-	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, banner_duration)
+	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, banner_duration, level == 1)
 	await _hud.show_banner("Niveau %d" % level, subtitle, banner_duration)
 	_is_level_starting = false
 	if _is_gameover:

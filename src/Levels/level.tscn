@@ -18,10 +18,9 @@ menu_scene_path = "res://src/UI/Screens/Menu.tscn"
 [node name="Background" parent="." unique_id=728231568 instance=ExtResource("2_background")]
 
 [node name="Player" parent="." unique_id=1650618208 instance=ExtResource("3_player")]
-position = Vector2(70, 170)
+position = Vector2(170, 170)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=952472383]
-
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=1402320325]
 
