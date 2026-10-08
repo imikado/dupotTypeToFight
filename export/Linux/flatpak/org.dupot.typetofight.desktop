@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Type to Fight
+Name[fr]=Type to Fight
+Comment=Learn to type with ten fingers by fighting enemies
+Comment[fr]=Apprendre à taper avec dix doigts en combattant des ennemis
+Exec=typetofight
+Type=Application
+Icon=org.dupot.typetofight
+Categories=Game;Education;ArcadeGame;
+Keywords=typing;keyboard;touch typing;game;education;dactylographie;clavier;

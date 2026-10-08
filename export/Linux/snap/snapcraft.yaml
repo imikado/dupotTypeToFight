@@ -1,0 +1,45 @@
+title: Type to Fight
+name: dupot-type-to-fight
+base: core22
+version: "1.0.0"
+summary: Learn to type with ten fingers by fighting enemies
+description: |
+  Type to Fight is an arcade game that teaches touch typing.
+  Enemies keep coming: type the right key to strike them before they reach you.
+  Progressive lessons from the F and J home keys to the whole keyboard (AZERTY and QWERTY),
+  one color per finger, and your mistakes come back until you master them.
+  This Game was made with Godot 4.7.2
+
+grade: stable
+confinement: strict
+contact: imikado@gmail.com
+license: LGPL-2.1-only
+issues: https://github.com/imikado/dupotTypeToFight/issues
+source-code: https://github.com/imikado/dupotTypeToFight/
+website: https://www.dupot.org/games.html
+
+apps:
+  dupot-type-to-fight:
+    command: dupotTypeToFight.x86_64
+    extensions: [gnome]
+    plugs:
+      - opengl
+      - audio-playback
+      - x11
+      - wayland
+
+parts:
+  game:
+    plugin: dump
+    source: .
+    organize:
+      dupotTypeToFight.x86_64: dupotTypeToFight.x86_64
+      dupotTypeToFight.pck: dupotTypeToFight.pck
+    stage:
+      - dupotTypeToFight.x86_64
+      - dupotTypeToFight.pck
+    prime:
+      - dupotTypeToFight.x86_64
+      - dupotTypeToFight.pck
+    stage-packages:
+      - libc6

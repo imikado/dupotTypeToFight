@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Type to Fight
+Comment=Learn to type with ten fingers by fighting enemies
+Exec=dupot-type-to-fight
+Type=Application
+Icon=${SNAP}/meta/gui/dupot-type-to-fight.png
+Categories=Game;Education;
+Keywords=typing;keyboard;touch typing;game;education;

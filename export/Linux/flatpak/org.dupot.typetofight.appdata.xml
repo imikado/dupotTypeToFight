@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.dupot.typetofight</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LGPL-2.1-only</project_license>
+  <name>Type to Fight</name>
+  <launchable type="desktop-id">org.dupot.typetofight.desktop</launchable>
+  <developer id="michael.bertocchi">
+    <name>Michael Bertocchi</name>
+  </developer>
+  <summary>Learn to type with ten fingers by fighting enemies</summary>
+  <summary xml:lang="fr">Apprendre à taper avec dix doigts en combattant des ennemis</summary>
+  <description>
+    <p>
+      Type to Fight is an arcade game that teaches touch typing. Enemies keep coming:
+      type the right key to strike them before they reach you.
+    </p>
+    <ul>
+      <li>Progressive lessons, from the F and J home keys to the whole keyboard (AZERTY and QWERTY)</li>
+      <li>One color per finger: warm colors for the left hand, complementary colors for the right hand</li>
+      <li>Rhythm-game display: the next key falls in the center of the screen</li>
+      <li>Your mistakes come back more often until you master them</li>
+      <li>94% accuracy is needed to unlock the next level</li>
+    </ul>
+    <p>
+      This game was made with Godot 4.7.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_01_gameplay.png</image>
+      <caption>Type the key falling in the center to strike the enemies</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_02_ready.png</image>
+      <caption>Each level starts by placing your index fingers and finding the new keys</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_03_layout.png</image>
+      <caption>The keyboard shows the key to type, colored by finger</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_04_error.png</image>
+      <caption>On a mistake, the keyboard shows the wrong key and the expected one</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_05_stats.png</image>
+      <caption>Level results with accuracy and most missed keys</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_06_menu.png</image>
+      <caption>Main menu: difficulty, keyboard layout and language</caption>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://www.dupot.org/games.html</url>
+  <url type="bugtracker">https://github.com/imikado/dupotTypeToFight/issues</url>
+  <url type="vcs-browser">https://github.com/imikado/dupotTypeToFight/</url>
+  <update_contact>imikado@gmail.com</update_contact>
+  <categories>
+    <category>Game</category>
+    <category>Education</category>
+  </categories>
+  <recommends>
+    <control>keyboard</control>
+  </recommends>
+  <supports>
+    <control>pointing</control>
+  </supports>
+  <branding>
+    <color type="primary" scheme_preference="light">#f2ed3d</color>
+    <color type="primary" scheme_preference="dark">#101633</color>
+  </branding>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">mild</content_attribute>
+  </content_rating>
+  <releases>
+    <release date="2026-10-08" version="1.0.0">
+      <description>
+        <ul>
+          <li>First version</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
