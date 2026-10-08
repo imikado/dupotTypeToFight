@@ -1,0 +1,111 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/UI/Screens/Menu.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://src/Levels/Shared/background.tscn" id="2_background"]
+[ext_resource type="PackedScene" path="res://src/Actors/Players/Player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://src/Actors/Enemies/Ant/ant.tscn" id="4_ant"]
+[ext_resource type="PackedScene" path="res://src/Levels/level.tscn" id="5_level"]
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+mainLevel = ExtResource("5_level")
+
+[node name="Background" parent="." instance=ExtResource("2_background")]
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 14.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.2, 0.76, 0.28, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 22
+text = "Type to Fight"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 58.0
+offset_bottom = 72.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 6
+text = "Tape la bonne touche pour frapper les ennemis"
+horizontal_alignment = 1
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(90, 170)
+
+[node name="Ant" parent="." instance=ExtResource("4_ant")]
+position = Vector2(390, 170)
+
+[node name="Menu" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -170.0
+offset_right = 60.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="PlayButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Jouer"
+
+[node name="Difficulty" type="OptionButton" parent="Menu"]
+layout_mode = 2
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "Facile"
+popup/item_0/id = 0
+popup/item_1/text = "Normal"
+popup/item_1/id = 1
+
+[node name="Layout" type="OptionButton" parent="Menu"]
+layout_mode = 2
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "Clavier AZERTY"
+popup/item_0/id = 0
+popup/item_1/text = "Clavier QWERTY"
+popup/item_1/id = 1
+
+[node name="QuitButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Quitter"
+
+[node name="BestScoreLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -24.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+text = "Meilleur score : 0"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Menu/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="item_selected" from="Menu/Difficulty" to="." method="_on_difficulty_item_selected"]
+[connection signal="item_selected" from="Menu/Layout" to="." method="_on_layout_item_selected"]
+[connection signal="pressed" from="Menu/QuitButton" to="." method="_on_quit_button_pressed"]

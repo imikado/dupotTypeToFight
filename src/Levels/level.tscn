@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://byhsmhxiw2y5f"]
+
+[ext_resource type="Script" uid="uid://ctuay6l1la8li" path="res://src/Levels/level.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://src/Levels/Shared/background.tscn" id="2_background"]
+[ext_resource type="PackedScene" uid="uid://b3xc1fq0l7rli" path="res://src/Actors/Players/Player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://src/Actors/Enemies/Ant/ant.tscn" id="4_ant"]
+[ext_resource type="PackedScene" path="res://src/Actors/Enemies/Spider/spider.tscn" id="5_spider"]
+[ext_resource type="PackedScene" path="res://src/Actors/Enemies/Beetle/beetle.tscn" id="6_beetle"]
+[ext_resource type="PackedScene" path="res://src/UI/Screens/game_over.tscn" id="8_game_over"]
+[ext_resource type="PackedScene" path="res://src/UI/hud.tscn" id="9_hud"]
+
+[node name="Level" type="Node2D" unique_id=2069490891]
+script = ExtResource("1_script")
+enemy_scenes = Array[PackedScene]([ExtResource("4_ant"), ExtResource("5_spider"), ExtResource("6_beetle")])
+game_over_scene = ExtResource("8_game_over")
+menu_scene_path = "res://src/UI/Screens/Menu.tscn"
+
+[node name="Background" parent="." unique_id=728231568 instance=ExtResource("2_background")]
+
+[node name="Player" parent="." unique_id=1650618208 instance=ExtResource("3_player")]
+position = Vector2(70, 170)
+
+[node name="Enemies" type="Node2D" parent="." unique_id=952472383]
+
+
+[node name="SpawnTimer" type="Timer" parent="." unique_id=1402320325]
+
+[node name="Hud" parent="." unique_id=101069319 instance=ExtResource("9_hud")]
+
+[connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

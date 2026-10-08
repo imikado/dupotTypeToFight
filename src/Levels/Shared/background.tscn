@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://src/Levels/Shared/sky.png" id="1_sky"]
+[ext_resource type="Texture2D" path="res://src/Levels/Shared/background-trees-up.png" id="2_trees"]
+[ext_resource type="Texture2D" path="res://src/Levels/Shared/background.png" id="3_ground"]
+[ext_resource type="Texture2D" path="res://src/Levels/Shared/background-brushes-down.png" id="4_brushes"]
+
+[node name="Background" type="Node2D"]
+
+[node name="SkyColor" type="ColorRect" parent="."]
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+color = Color(0, 0.196078, 0.290196, 1)
+
+[node name="Sky" type="TextureRect" parent="."]
+offset_right = 620.0
+offset_bottom = 120.0
+mouse_filter = 2
+texture = ExtResource("1_sky")
+
+[node name="Ground" type="TextureRect" parent="."]
+offset_top = 150.0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+texture = ExtResource("3_ground")
+stretch_mode = 1
+
+[node name="Trees" type="TextureRect" parent="."]
+offset_top = 92.0
+offset_right = 620.0
+offset_bottom = 155.0
+mouse_filter = 2
+texture = ExtResource("2_trees")
+
+[node name="Brushes" type="TextureRect" parent="."]
+offset_top = 146.0
+offset_right = 620.0
+offset_bottom = 164.0
+mouse_filter = 2
+texture = ExtResource("4_brushes")
