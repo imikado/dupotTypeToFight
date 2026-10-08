@@ -167,7 +167,7 @@ size = Vector2(24, 28)
 [node name="Beetle" type="Node2D"]
 script = ExtResource("1_script")
 key_count = 3
-damage = 25
+damage = 14
 speed = 20.0
 attack_distance = 26.0
 

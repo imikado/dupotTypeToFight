@@ -6,12 +6,14 @@ extends Panel
 
 const COLOR_PASSED := Color(0.2, 0.76, 0.28)
 const COLOR_RETRY := Color(0.95, 0.55, 0.15)
+const COLOR_SCORE := Color(1, 0.823529, 0.247059)
 
 @onready var _title_label: Label = $VBoxContainer/TitleLabel
 @onready var _accuracy_label: Label = $VBoxContainer/AccuracyLabel
 @onready var _accuracy_bar: ProgressBar = $VBoxContainer/AccuracyBar
 @onready var _required_marker: ColorRect = $VBoxContainer/AccuracyBar/RequiredMarker
 @onready var _details_label: Label = $VBoxContainer/DetailsLabel
+@onready var _score_label: Label = $VBoxContainer/ScoreLabel
 @onready var _missed_label: RichTextLabel = $VBoxContainer/MissedLabel
 @onready var _result_label: Label = $VBoxContainer/ResultLabel
 @onready var _continue_label: Label = $VBoxContainer/ContinueLabel
@@ -27,8 +29,9 @@ func _ready():
 	_accuracy_bar.add_theme_stylebox_override("fill", _bar_fill)
 
 
-# accuracy et required entre 0 et 1 ; missed_keys triées de la plus ratée à la moins ratée
-func show_stats(passed: bool, accuracy: float, required: float, good: int, errors: int, missed_keys: Array):
+# accuracy et required entre 0 et 1 ; missed_keys triées de la plus ratée à la moins ratée ;
+# score : points gagnés pendant le niveau, best_score : record du niveau
+func show_stats(passed: bool, accuracy: float, required: float, good: int, errors: int, missed_keys: Array, score: int, best_score: int, is_record: bool):
 	var color = COLOR_PASSED if passed else COLOR_RETRY
 	_title_label.text = tr("STATS_LEVEL_PASSED") if passed else tr("STATS_LEVEL_RETRY")
 	_title_label.add_theme_color_override("font_color", color)
@@ -43,6 +46,11 @@ func show_stats(passed: bool, accuracy: float, required: float, good: int, error
 	_required_marker.offset_right = 1
 
 	_details_label.text = tr("STATS_GOOD_ERRORS") % [good, errors]
+	if is_record:
+		_score_label.text = tr("STATS_SCORE_RECORD") % score
+	else:
+		_score_label.text = tr("STATS_SCORE") % [score, best_score]
+	_score_label.add_theme_color_override("font_color", COLOR_PASSED if is_record else COLOR_SCORE)
 
 	if missed_keys.is_empty():
 		_missed_label.text = "[center]%s[/center]" % tr("STATS_NO_MISSED_KEY")

@@ -14,20 +14,28 @@ const TILE_Y := 3.0
 const TILE_FONT_SIZE := 10
 # ligne de frappe : position x des tuiles dont l'ennemi est à portée
 const HIT_X := 13.0
-# pixels de piste par pixel de distance entre le joueur et l'ennemi
+# pixels de piste par pixel de distance entre le joueur et l'ennemi, pour une
+# piste de LANE_REFERENCE_WIDTH ; proportionnel à la largeur réelle de la piste
+# (un ennemi qui apparaît à droite de l'écran a sa tuile au bout de la piste)
 const LANE_SCALE := 0.9
+const LANE_REFERENCE_WIDTH := 244.0
 # vitesse de glissement des tuiles vers leur position (plus grand = plus vif)
 const SLIDE_SHARPNESS := 14.0
 
-# fond de tuile = couleur du doigt assombrie, bordure = couleur du doigt
+# fond de tuile = couleur du doigt assombrie, bordure = couleur du doigt ; la piste
+# est volontairement discrète (couleurs ternes, transparence) pour ne pas détourner
+# le regard de la touche qui tombe au centre de l'écran
 const TILE_DARKEN := 0.2
-const COLOR_CURRENT := Color.WHITE
+const TILE_DESATURATE := 0.45
+const TILE_ALPHA := 0.65
+const COLOR_DULL := Color(0.45, 0.45, 0.5)
+const COLOR_CURRENT := Color(1, 1, 1, 0.75)
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 const COLOR_GOOD := Color(0.3, 0.9, 0.4)
 const COLOR_TOO_EARLY := Color(1, 0.6, 0.15)
 # cadre cible autour de l'emplacement de frappe (comme les récepteurs des jeux de rythme)
-const COLOR_HIT_TARGET := Color(1, 1, 1, 0.35)
-const COLOR_HIT_TARGET_ACTIVE := Color(0.3, 0.9, 0.4, 0.9)
+const COLOR_HIT_TARGET := Color(1, 1, 1, 0.2)
+const COLOR_HIT_TARGET_ACTIVE := Color(0.3, 0.9, 0.4, 0.55)
 
 # éclats autour d'une tuile validée
 const BURST_COUNT := 8
@@ -54,7 +62,7 @@ func _process(delta):
 		var tile: Panel = tile_data.node
 		var target_x = HIT_X
 		if _player and is_instance_valid(tile_data.enemy):
-			target_x += max(0.0, _player.distance_to_hit(tile_data.enemy)) * LANE_SCALE
+			target_x += max(0.0, _player.distance_to_hit(tile_data.enemy)) * LANE_SCALE * size.x / LANE_REFERENCE_WIDTH
 		# les touches d'un même ennemi se suivent ; les tuiles ne se chevauchent jamais
 		if tile_data.enemy == previous_enemy:
 			target_x = previous_x + TILE_SPACING
@@ -187,12 +195,13 @@ func _create_tile(key: String) -> Panel:
 	var tile := Panel.new()
 	tile.size = TILE_SIZE
 	var style := StyleBoxFlat.new()
-	var finger_color = GlobalLessons.get_key_color(key)
+	var finger_color = _get_tile_color(key)
 	style.bg_color = finger_color.darkened(TILE_DARKEN)
 	style.border_color = finger_color
 	style.set_border_width_all(2)
 	style.set_corner_radius_all(3)
 	tile.add_theme_stylebox_override("panel", style)
+	tile.modulate.a = TILE_ALPHA
 
 	var label := Label.new()
 	label.text = key.to_upper()
@@ -214,5 +223,10 @@ func _refresh_current():
 	for i in _tiles.size():
 		var tile: Panel = _tiles[i].node
 		var style: StyleBoxFlat = tile.get_theme_stylebox("panel")
-		style.border_color = COLOR_CURRENT if i == 0 else GlobalLessons.get_key_color(_tiles[i].key)
+		style.border_color = COLOR_CURRENT if i == 0 else _get_tile_color(_tiles[i].key)
 		style.set_border_width_all(3 if i == 0 else 2)
+
+
+# couleur du doigt, ternie pour que la piste reste discrète
+func _get_tile_color(key: String) -> Color:
+	return GlobalLessons.get_key_color(key).lerp(COLOR_DULL, TILE_DESATURATE)

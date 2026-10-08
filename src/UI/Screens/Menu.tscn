@@ -61,46 +61,138 @@ position = Vector2(90, 170)
 [node name="Ant" parent="." instance=ExtResource("4_ant")]
 position = Vector2(390, 170)
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="Modes" type="HBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -60.0
-offset_top = -170.0
-offset_right = 60.0
-offset_bottom = -32.0
+offset_left = -130.0
+offset_top = 78.0
+offset_right = 130.0
+offset_bottom = 180.0
 grow_horizontal = 2
-grow_vertical = 0
-theme_override_constants/separation = 4
+theme_override_constants/separation = 12
 
-[node name="PlayButton" type="Button" parent="Menu"]
+[node name="TrainingButton" type="Button" parent="Modes"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
-text = "MENU_PLAY"
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="Modes/TrainingButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Title" type="Label" parent="Modes/TrainingButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.76, 0.28, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 12
+text = "MODE_TRAINING"
+horizontal_alignment = 1
+
+[node name="Tag" type="Label" parent="Modes/TrainingButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+theme_override_font_sizes/font_size = 6
+text = "MODE_TRAINING_TAG"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="Modes/TrainingButton/VBox"]
+layout_mode = 2
+theme_override_constants/line_spacing = -4
+theme_override_font_sizes/font_size = 6
+text = "MODE_TRAINING_DESC"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Best" type="Label" parent="Modes/TrainingButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 1
+
+[node name="ArcadeButton" type="Button" parent="Modes"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="Modes/ArcadeButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Title" type="Label" parent="Modes/ArcadeButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.76, 0.28, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 12
+text = "MODE_ARCADE"
+horizontal_alignment = 1
+
+[node name="Tag" type="Label" parent="Modes/ArcadeButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+theme_override_font_sizes/font_size = 6
+text = "MODE_ARCADE_TAG"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="Modes/ArcadeButton/VBox"]
+layout_mode = 2
+theme_override_constants/line_spacing = -4
+theme_override_font_sizes/font_size = 6
+text = "MODE_ARCADE_DESC"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Best" type="Label" parent="Modes/ArcadeButton/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 1
+
+[node name="Menu" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 188.0
+offset_right = 130.0
+offset_bottom = 206.0
+grow_horizontal = 2
+theme_override_constants/separation = 12
+alignment = 1
 
 [node name="SettingsButton" type="Button" parent="Menu"]
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "SETTINGS"
 
 [node name="QuitButton" type="Button" parent="Menu"]
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "MENU_QUIT"
-
-[node name="BestScoreLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -24.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
-text = "Meilleur score : 0"
-horizontal_alignment = 1
 
 [node name="WebsiteLink" type="LinkButton" parent="."]
 layout_mode = 1
@@ -256,7 +348,70 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "BACK"
 
-[connection signal="pressed" from="Menu/PlayButton" to="." method="_on_play_button_pressed"]
+[node name="LevelPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 112.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_settings")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="LevelPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 8
+text = "LEVEL_SELECT"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="LevelPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="LevelPanel/VBoxContainer/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 6
+
+[node name="InfoLabel" type="Label" parent="LevelPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 1
+
+[node name="BackButton" type="Button" parent="LevelPanel/VBoxContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
+[connection signal="pressed" from="LevelPanel/VBoxContainer/BackButton" to="." method="_on_level_back_button_pressed"]
+[connection signal="pressed" from="Modes/TrainingButton" to="." method="_on_play_button_pressed" binds= [0]]
+[connection signal="pressed" from="Modes/ArcadeButton" to="." method="_on_play_button_pressed" binds= [1]]
 [connection signal="pressed" from="Menu/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Difficulty" to="." method="_on_difficulty_item_selected"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Layout" to="." method="_on_layout_item_selected"]

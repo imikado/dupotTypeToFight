@@ -131,6 +131,12 @@ scroll_active = false
 autowrap_mode = 0
 
 [node name="KeyTrack" parent="." instance=ExtResource("3_track")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -120.0
+offset_right = -4.0
+grow_horizontal = 0
 
 [node name="KeyStats" type="Control" parent="."]
 visible = false
@@ -138,10 +144,10 @@ layout_mode = 3
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -37.0
-offset_right = 114.0
-offset_bottom = -7.0
+offset_left = 6.0
+offset_top = -38.0
+offset_right = 118.0
+offset_bottom = -6.0
 grow_vertical = 0
 mouse_filter = 2
 script = ExtResource("9_key_stats")
@@ -149,16 +155,16 @@ script = ExtResource("9_key_stats")
 [node name="MiniKeyboard" type="Control" parent="."]
 visible = false
 layout_mode = 3
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -114.0
-offset_top = -37.0
-offset_right = -2.0
-offset_bottom = -7.0
-grow_horizontal = 0
+offset_top = -38.0
+offset_right = 114.0
+offset_bottom = -6.0
+grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 script = ExtResource("7_mini")

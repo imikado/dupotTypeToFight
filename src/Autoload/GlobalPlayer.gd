@@ -14,14 +14,15 @@ const WEAKNESS_ON_SUCCESS := 1
 var _weak_keys := {}
 
 
-func reset_game():
+func reset_game(keep_weak_keys := false):
 	_max_life = GlobalGame.player_start_life
 	_life = _max_life
 	_score = 0
 	_combo = 0
 	_best_combo = 0
 	_killed = 0
-	_weak_keys.clear()
+	if not keep_weak_keys:
+		_weak_keys.clear()
 
 
 func get_life() -> int:

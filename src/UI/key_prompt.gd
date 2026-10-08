@@ -51,6 +51,12 @@ func _ready():
 	_box_style.set_corner_radius_all(4)
 
 
+# décale la grande touche (et sa position de repos) vers le bas
+func shift_y(offset: float):
+	_base_y += offset
+	position.y += offset
+
+
 func setup(key_track):
 	_key_track = key_track
 	_key_track.key_validated.connect(_on_key_validated)

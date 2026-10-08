@@ -174,7 +174,7 @@ size = Vector2(24, 28)
 [node name="Spider" type="Node2D"]
 script = ExtResource("1_script")
 key_count = 2
-damage = 15
+damage = 12
 speed = 26.0
 attack_distance = 27.0
 

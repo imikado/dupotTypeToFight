@@ -25,11 +25,26 @@ const SPAWN_MIN_DELAY := 0.4
 # écart minimal avec le dernier ennemi au point d'apparition
 const SPAWN_MIN_SPACING := 40.0
 const LEVEL_UP_HEAL := 20
+# ennemis à vaincre pour finir un niveau : assez de lettres pour qu'une erreur ne
+# suffise pas à rater la précision demandée (33 au niveau 1 : 2 erreurs permises à 94 %)
+const KILLS_TO_PASS_START := 30
+const KILLS_TO_PASS_PER_LEVEL := 3
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
 # (avec, en plus, les nouvelles touches du niveau, pour savoir les trouver)
 const HOME_KEYS := ["f", "j"]
 # durée d'affichage du clavier en transparence au début du niveau
 const LAYOUT_DURATION := 4.0
+# niveaux d'apparition des araignées (2 touches) et des scarabées (3 touches)
+const SPIDER_LEVEL := 3
+const BEETLE_LEVEL := 5
+# mode Mots : un mot par ennemi, donc moins d'ennemis à vaincre, plus lents et
+# plus espacés (proportionnellement à la longueur des mots)
+const WORDS_KILLS_TO_PASS_START := 10
+const WORDS_KILLS_TO_PASS_PER_LEVEL := 2
+const WORDS_SPEED_COEF := 0.8
+const WORDS_SPAWN_INTERVAL_PER_LETTER := 0.5
+# mode Arcade : sans la bande du bas, la scène descend d'autant
+const WORDS_LAYOUT_SHIFT := 38.0
 # nombre de touches ratées montrées dans le bilan
 const MISSED_KEYS_SHOWN := 3
 
@@ -41,6 +56,7 @@ signal stats_closed
 @onready var _camera: Camera2D = $Camera2D
 @onready var _hud = $Hud
 @onready var _key_track = $Hud.key_track
+@onready var _background: Node2D = $Background
 
 var _level := 1
 var _killed_in_level := 0
@@ -63,6 +79,8 @@ var _good_keys := 0
 var _errors := 0
 # touche attendue -> nombre d'erreurs
 var _missed := {}
+# score au début de la tentative, pour calculer le score du niveau
+var _level_start_score := 0
 
 
 func _ready():
@@ -73,8 +91,22 @@ func _ready():
 	_key_track.set_player(_player)
 	_hud.resume_requested.connect(_set_paused.bind(false))
 	_hud.menu_requested.connect(_go_to_menu)
+	if GlobalGame.isWordsMode():
+		_apply_light_layout()
 
 	_start_level(GlobalGame.getLevel())
+
+
+# mode Arcade : interface allégée (sans la bande du bas) et scène descendue pour
+# occuper la place libérée
+func _apply_light_layout():
+	_hud.set_light_layout(WORDS_LAYOUT_SHIFT)
+	# la caméra remonte : le joueur et les ennemis descendent à l'écran
+	_camera.offset.y = -WORDS_LAYOUT_SHIFT
+	# les couches du décor fixes verticalement descendent d'autant (sauf le fond uni du ciel)
+	for layer in _background.get_children():
+		if layer is Parallax2D and layer.scroll_scale.y == 0 and layer.name != "SkyColor":
+			layer.scroll_offset.y += WORDS_LAYOUT_SHIFT
 
 
 func _process(_delta):
@@ -140,15 +172,20 @@ func _start_level(level: int, focus_keys: Array = []):
 	_errors = 0
 	_missed.clear()
 	_hud.key_stats.reset()
+	_level_start_score = GlobalPlayer.get_score()
 	GlobalGame.saveLevel(level)
+	GlobalGame.unlockLevel(level)
 
-	var new_keys = GlobalLessons.get_new_keys(level)
-	_hud.set_level(level, GlobalLessons.get_keys(level), new_keys)
+	var keys = _get_level_keys()
+	var new_keys = [] if GlobalGame.isWordsMode() else GlobalLessons.get_new_keys(level)
+	_hud.set_level(level, keys, new_keys, tr("LEVEL_WORDS") % GlobalWords.get_word_length(level) if GlobalGame.isWordsMode() else "")
 	_hud.set_level_progress(0, _get_kills_to_pass())
 	GlobalEvents.level_changed.emit(level, new_keys)
 
 	var subtitle = tr("LEVEL_ALL_KEYS")
-	if not new_keys.is_empty():
+	if GlobalGame.isWordsMode():
+		subtitle = tr("LEVEL_WORDS") % GlobalWords.get_word_length(level)
+	elif not new_keys.is_empty():
 		subtitle = tr("LEVEL_NEW_KEYS") % " ".join(new_keys).to_upper()
 	if not focus_keys.is_empty():
 		subtitle = tr("LEVEL_FOCUS_KEYS") % " ".join(focus_keys).to_upper()
@@ -159,7 +196,7 @@ func _start_level(level: int, focus_keys: Array = []):
 	for key in new_keys:
 		if not _ready_keys.has(key):
 			_ready_keys.append(key)
-	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, _ready_keys)
+	_hud.keyboard_overlay.show_level_keys(keys, new_keys, _ready_keys)
 
 	# le niveau ne démarre que quand le joueur a posé ses index sur F et J
 	_ready_pressed.clear()
@@ -167,8 +204,9 @@ func _start_level(level: int, focus_keys: Array = []):
 	await player_ready
 	_hud.keyboard_overlay.set_message(tr("GO"), Color.WHITE)
 	await get_tree().create_timer(0.6).timeout
-	# le clavier reste quelques secondes en transparence pour voir la disposition
-	_hud.keyboard_overlay.show_layout(GlobalLessons.get_keys(level), LAYOUT_DURATION)
+	# le clavier reste quelques secondes en transparence pour voir la disposition,
+	# et tout le niveau pendant les leçons qui apprennent les touches
+	_hud.keyboard_overlay.show_layout(keys, LAYOUT_DURATION, _is_learning_lesson())
 	await _hud.hide_banner()
 	_is_level_starting = false
 
@@ -183,12 +221,24 @@ func _on_ready_key_typed(typed: String):
 		player_ready.emit()
 
 
+# touches du niveau : celles des leçons apprises, ou tout le clavier en mode Mots
+func _get_level_keys() -> Array:
+	if GlobalGame.isWordsMode():
+		return GlobalWords.get_keys()
+	return GlobalLessons.get_keys(_level)
+
+
 func _get_kills_to_pass() -> int:
-	return 8 + 2 * _level
+	if GlobalGame.isWordsMode():
+		return WORDS_KILLS_TO_PASS_START + WORDS_KILLS_TO_PASS_PER_LEVEL * _level
+	return KILLS_TO_PASS_START + KILLS_TO_PASS_PER_LEVEL * _level
 
 
 func _get_spawn_interval() -> float:
-	return max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - SPAWN_INTERVAL_PER_LEVEL * (_level - 1))
+	var interval = max(SPAWN_INTERVAL_MIN, SPAWN_INTERVAL_START - SPAWN_INTERVAL_PER_LEVEL * (_level - 1))
+	if GlobalGame.isWordsMode():
+		interval += WORDS_SPAWN_INTERVAL_PER_LETTER * GlobalWords.get_word_length(_level)
+	return interval
 
 
 func _update_spawn(delta: float):
@@ -213,15 +263,21 @@ func _has_enemy_incoming() -> bool:
 
 
 func _get_speed_coef() -> float:
-	return GlobalGame.enemy_speed_coef * (1.0 + 0.06 * (_level - 1))
+	var coef = GlobalGame.enemy_speed_coef * (1.0 + 0.06 * (_level - 1))
+	if GlobalGame.isWordsMode():
+		coef *= WORDS_SPEED_COEF
+	return coef
 
 
-# fourmis (1 touche) au début, puis araignées (2) et scarabées (3)
+# fourmis (1 touche) au début, puis araignées (2) et scarabées (3) ; en mode
+# Mots, le mot donne les touches : tous les ennemis sont possibles
 func _pick_enemy_scene() -> PackedScene:
+	if GlobalGame.isWordsMode():
+		return enemy_scenes.pick_random()
 	var max_index = 0
-	if _level >= 3:
+	if _level >= SPIDER_LEVEL:
 		max_index = 1
-	if _level >= 5:
+	if _level >= BEETLE_LEVEL:
 		max_index = 2
 	max_index = min(max_index, enemy_scenes.size() - 1)
 	# les fourmis restent majoritaires
@@ -230,17 +286,26 @@ func _pick_enemy_scene() -> PackedScene:
 	return enemy_scenes[randi_range(0, max_index)]
 
 
+# leçons qui introduisent de nouvelles touches (mode apprentissage)
+func _is_learning_lesson() -> bool:
+	return not GlobalGame.isWordsMode() and _level <= GlobalLessons.get_lesson_count()
+
+
 func _spawn_enemy():
 	if _is_gameover or _is_level_starting or _is_level_complete or _queue.size() >= MAX_ENEMIES:
 		return
 
 	var enemy: Enemy = _pick_enemy_scene().instantiate()
 	var keys := []
-	for i in enemy.key_count:
-		keys.append(GlobalLessons.pick_key(_level, GlobalPlayer.get_weak_keys()))
+	if GlobalGame.isWordsMode():
+		for letter in GlobalWords.pick_word(_level, GlobalPlayer.get_weak_keys()):
+			keys.append(letter)
+	else:
+		for i in enemy.key_count:
+			keys.append(GlobalLessons.pick_key(_level, GlobalPlayer.get_weak_keys()))
 
 	enemy.position = Vector2(_screen_left() + SPAWN_SCREEN_X, _player.position.y)
-	enemy.setup(keys, _player, _get_speed_coef())
+	enemy.setup(keys, _player, _get_speed_coef(), GlobalGame.isWordsMode())
 	if not _queue.is_empty():
 		enemy.front_enemy = _queue.back()
 
@@ -340,9 +405,16 @@ func _end_level():
 	missed_keys.sort_custom(func(a, b): return _missed[a] > _missed[b])
 	missed_keys = missed_keys.slice(0, MISSED_KEYS_SHOWN)
 
+	if passed:
+		GlobalGame.unlockLevel(_level + 1)
+	var level_score = GlobalPlayer.get_score() - _level_start_score
+	var is_record = GlobalGame.saveLevelScore(_level, level_score)
+
+	# le clavier d'aide gardé pendant le niveau ne doit pas masquer le bilan
+	_hud.keyboard_overlay.hide_keyboard()
 	_is_showing_stats = true
 	_can_close_stats = false
-	await _hud.level_stats.show_stats(passed, accuracy, required_accuracy, _good_keys, _errors, missed_keys)
+	await _hud.level_stats.show_stats(passed, accuracy, required_accuracy, _good_keys, _errors, missed_keys, level_score, GlobalGame.getLevelBestScore(_level), is_record)
 	_can_close_stats = true
 	await stats_closed
 	_is_showing_stats = false
@@ -376,4 +448,7 @@ func _set_paused(paused: bool):
 
 func _go_to_menu():
 	get_tree().paused = false
+	# la partie s'arrête là : son score compte pour les meilleurs scores
+	if not _is_gameover:
+		GlobalGame.saveHighScore(GlobalPlayer.get_score(), _level)
 	GlobalTransition.change_scene_to_packed(load(menu_scene_path))

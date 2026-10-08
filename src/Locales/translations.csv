@@ -1,8 +1,6 @@
 keys,en,fr
 MENU_SUBTITLE,Type the right key to hit the enemies,Tape la bonne touche pour frapper les ennemis
-MENU_PLAY,Play,Jouer
 MENU_QUIT,Quit,Quitter
-MENU_BEST_SCORE,Best score: %d,Meilleur score : %d
 DIFFICULTY_EASY,Easy,Facile
 DIFFICULTY_NORMAL,Normal,Normal
 KEYBOARD_AZERTY,AZERTY keyboard,Clavier AZERTY
@@ -53,3 +51,17 @@ TUTO_PLAY_TEXT,"Type the key falling in the center of the screen: your hero stri
 SETTINGS_TUTORIAL,Tutorial,Tutoriel
 YES,Yes,Oui
 NO,No,Non
+RETRY_LEVEL,Retry level %d,Rejouer le niveau %d
+GAME_OVER_ENCOURAGE,"Try again as many times as you like, you keep your progress","Réessaie autant que tu veux, ta progression est gardée"
+LEVEL_SELECT,Choose a level,Choisis ton niveau
+LEVEL_BEST_SCORE,Best score: %d,Meilleur score : %d
+STATS_SCORE,Level score: %d   Best: %d,Score du niveau : %d   Record : %d
+STATS_SCORE_RECORD,New level record: %d!,Nouveau record du niveau : %d !
+LEVEL_WORDS,%d-letter words,Mots de %d lettres
+MODE_TRAINING,Training,Training
+MODE_TRAINING_TAG,Letter by letter,Lettre par lettre
+MODE_TRAINING_DESC,"Learn the keys, lesson by lesson","Les touches, leçon par leçon"
+MODE_ARCADE,Arcade,Arcade
+MODE_ARCADE_TAG,Words,Mots
+MODE_ARCADE_DESC,"3, 4, 5 letters and more","3, 4, 5 lettres et plus"
+MODE_BEST,Best: %d,Record : %d

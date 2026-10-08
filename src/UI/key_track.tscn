@@ -3,19 +3,19 @@
 [ext_resource type="Script" path="res://src/UI/key_track.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_band"]
-bg_color = Color(0.0627451, 0.0862745, 0.2, 0.92)
+bg_color = Color(0.0627451, 0.0862745, 0.2, 0.35)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.34, 0.39, 0.73, 1)
+border_color = Color(0.34, 0.39, 0.73, 0.3)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lane"]
-bg_color = Color(0.12, 0.14, 0.3, 1)
+bg_color = Color(0.12, 0.14, 0.3, 0.3)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
@@ -27,7 +27,7 @@ border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 1, 1, 0.35)
+border_color = Color(1, 1, 1, 0.2)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4

@@ -20,6 +20,8 @@ const BACKGROUND_MARGIN := 2.0
 # touche -> {ok, ko, order (première frappe), last (dernière frappe), flash, flash_color}
 var _stats := {}
 var _counter := 0
+# masqué en mode Arcade : le bilan en direct n'apparaît plus
+var enabled := true
 var _background := StyleBoxFlat.new()
 var _tile_style := StyleBoxFlat.new()
 
@@ -51,7 +53,7 @@ func record(key: String, ok: bool):
 	entry.last = _counter
 	entry.flash = FLASH_DURATION
 	entry.flash_color = COLOR_OK if ok else COLOR_KO
-	visible = true
+	visible = enabled
 	queue_redraw()
 
 

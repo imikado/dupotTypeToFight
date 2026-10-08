@@ -126,7 +126,7 @@ func pick_key(level: int, weak_keys := {}) -> String:
 		if available.has(key):
 			weights[key] = weak_keys[key]
 	if not weights.is_empty() and randf() < WEAK_KEY_CHANCE:
-		return _pick_weighted(weights)
+		return pick_weighted(weights)
 
 	var new_keys = get_new_keys(level)
 	if not new_keys.is_empty() and randf() < 0.5:
@@ -134,7 +134,7 @@ func pick_key(level: int, weak_keys := {}) -> String:
 	return get_keys(level).pick_random()
 
 
-func _pick_weighted(weights: Dictionary) -> String:
+func pick_weighted(weights: Dictionary) -> String:
 	var total := 0.0
 	for key in weights:
 		total += weights[key]

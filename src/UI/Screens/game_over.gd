@@ -10,11 +10,15 @@ extends Control
 
 
 func _ready():
+	# le premier plan du décor passerait devant la fenêtre
+	$Background/Foreground.visible = false
 	var score = GlobalPlayer.get_score()
 	_stats_label.text = tr("GAME_OVER_STATS") % [
 		GlobalGame.getLevel(), GlobalPlayer.get_killed(), GlobalPlayer.get_best_combo()
 	]
 	_record_label.visible = score > 0 and score >= GlobalGame.getHighestScore()
+	# on rejoue le niveau perdu autant de fois qu'on veut, sans repartir du niveau 1
+	_replay_button.text = tr("RETRY_LEVEL") % GlobalGame.getLevel()
 
 	var tween = create_tween()
 	tween.tween_method(_set_score_text, 0, score, 1.0)
@@ -26,7 +30,7 @@ func _set_score_text(scoreValue: int):
 
 
 func _on_replay_button_pressed():
-	GlobalGame.resetGame()
+	GlobalGame.resetGame(GlobalGame.getLevel(), true)
 	GlobalTransition.change_scene_to_packed(load(level_scene_path))
 
 

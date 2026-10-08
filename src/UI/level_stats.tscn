@@ -34,7 +34,7 @@ anchor_bottom = 0.5
 offset_left = -120.0
 offset_top = -92.0
 offset_right = 120.0
-offset_bottom = 72.0
+offset_bottom = 86.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -84,6 +84,12 @@ mouse_filter = 2
 
 [node name="DetailsLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 6
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
 theme_override_font_sizes/font_size = 6
 horizontal_alignment = 1
 

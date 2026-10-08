@@ -31,6 +31,8 @@ const HOME_INDEX_RIGHT := 6
 # est juste au-dessus des personnages ; sans les mains pour rester compact
 const INTRO_Y := 84.0
 const ERROR_Y := 38.0
+# décalage vertical de l'interface de jeu (mode Arcade, sans la bande du bas)
+var y_offset := 0.0
 const INTRO_HEIGHT := 100.0
 const ERROR_HEIGHT := 64.0
 
@@ -79,6 +81,8 @@ var _key_track
 var _layout_mode := false
 var _layout_keys: Array = []
 var _layout_current := ""
+# clavier transparent gardé tout le niveau (au lieu de quelques secondes)
+var _keep_layout := false
 
 
 func _ready():
@@ -191,7 +195,7 @@ func show_level_keys(keys: Array, new_keys: Array, ready_keys: Array):
 	_reset_keys()
 	_layout_keys = keys
 	_is_showing_level = true
-	position.y = INTRO_Y
+	position.y = INTRO_Y + y_offset
 	size.y = INTRO_HEIGHT
 	for key in _keys:
 		var finger_color = GlobalLessons.get_key_color(key)
@@ -245,9 +249,11 @@ func set_message(text: String, color: Color, font_size := MESSAGE_FONT_SIZE_READ
 
 
 # après « C'est parti ! » : le clavier glisse sous la grande touche et reste en
-# transparence quelques secondes (touches du niveau colorées par doigt)
-func show_layout(keys: Array, duration: float):
+# transparence quelques secondes (touches du niveau colorées par doigt) ;
+# keep : il reste affiché jusqu'à hide_keyboard()
+func show_layout(keys: Array, duration: float, keep := false):
 	_layout_keys = keys
+	_keep_layout = keep
 	_enter_layout(duration)
 
 
@@ -266,9 +272,11 @@ func _enter_layout(duration: float):
 		_tween.kill()
 	_tween = create_tween()
 	_tween.set_parallel()
-	_tween.tween_property(self, "position:y", ERROR_Y, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(self, "position:y", ERROR_Y + y_offset, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	_tween.tween_property(self, "size:y", ERROR_HEIGHT, 0.3)
 	_tween.tween_property(self, "modulate:a", 1.0, 0.3)
+	if _keep_layout:
+		return
 	_tween.chain().tween_interval(duration)
 	_tween.chain().tween_property(self, "modulate:a", 0.0, 0.8)
 	_tween.chain().tween_callback(_on_hidden)
@@ -299,6 +307,7 @@ func _paint_layout_key(key: String, is_current: bool):
 
 
 func hide_keyboard():
+	_keep_layout = false
 	if _tween:
 		_tween.kill()
 	_tween = create_tween()
@@ -335,7 +344,7 @@ func _on_wrong_key(expected: String, typed: String):
 	_reset_keys()
 	# pendant la bannière de niveau, on reste en dessous pour ne pas la masquer
 	if not _is_showing_level:
-		position.y = ERROR_Y
+		position.y = ERROR_Y + y_offset
 		size.y = ERROR_HEIGHT
 	# mêmes couleurs que le clavier transparent, pour ne pas perdre ses repères
 	for key in _keys:

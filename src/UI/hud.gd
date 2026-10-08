@@ -33,6 +33,8 @@ const LIFE_LOW_RATIO := 0.3
 @onready var _resume_button: Button = $PausePanel/VBoxContainer/ResumeButton
 
 var _life_fill: StyleBoxFlat
+# mode Arcade : interface allégée, sans la bande du bas
+var _is_light := false
 
 
 func _ready():
@@ -57,9 +59,13 @@ func _ready():
 	_pause_panel.visible = false
 
 
-func set_level(level: int, keys: Array, new_keys: Array):
+# keys_text : texte affiché à la place de la liste des touches (mode Mots)
+func set_level(level: int, keys: Array, new_keys: Array, keys_text := ""):
 	_level_label.text = tr("LEVEL") % level
 	_mini_keyboard.set_available_keys(keys)
+	if not keys_text.is_empty():
+		_keys_label.text = "[right]%s[/right]" % keys_text
+		return
 	var text := ""
 	for key in keys:
 		var letter = key.to_upper()
@@ -119,8 +125,24 @@ func _on_combo_changed(new_value):
 	_combo_label.text = "combo %d  x%d" % [new_value, GlobalPlayer.get_multiplier()]
 
 
+# mode Arcade : on cache la bande du bas (bilan des touches, petit clavier, piste
+# des touches) et on descend la grande touche et le clavier d'aide de offset
+func set_light_layout(offset: float):
+	_is_light = true
+	key_stats.enabled = false
+	key_stats.visible = false
+	_mini_keyboard.visible = false
+	_keyboard_button.visible = false
+	# la piste continue de suivre les touches (la grande touche s'en sert), sans être vue
+	key_track.visible = false
+	_key_prompt.shift_y(offset)
+	keyboard_overlay.y_offset = offset
+
+
 # petit clavier permanent en bas de l'écran (bouton en haut ou touche Tab)
 func toggle_keyboard():
+	if _is_light:
+		return
 	_keyboard_button.button_pressed = not _keyboard_button.button_pressed
 
 

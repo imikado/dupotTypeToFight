@@ -28,16 +28,16 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_01_gameplay.png</image>
-      <caption>Type the key falling in the center to strike the enemies</caption>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_01_training.png</image>
+      <caption>Training mode: type the key falling in the center to strike the enemies</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_02_ready.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_02_arcade.png</image>
+      <caption>Arcade mode: type the words written above the enemies</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_03_ready.png</image>
       <caption>Each level starts by placing your index fingers and finding the new keys</caption>
-    </screenshot>
-    <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_03_layout.png</image>
-      <caption>The keyboard shows the key to type, colored by finger</caption>
     </screenshot>
     <screenshot>
       <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_04_error.png</image>
@@ -45,11 +45,15 @@
     </screenshot>
     <screenshot>
       <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_05_stats.png</image>
-      <caption>Level results with accuracy and most missed keys</caption>
+      <caption>Level results with accuracy, level record and most missed keys</caption>
     </screenshot>
     <screenshot>
       <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_06_menu.png</image>
-      <caption>Main menu: difficulty, keyboard layout and language</caption>
+      <caption>Main menu: choose between Training and Arcade</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_07_levels.png</image>
+      <caption>Replay any level you reached, with its best score</caption>
     </screenshot>
   </screenshots>
   <url type="homepage">https://www.dupot.org/games.html</url>

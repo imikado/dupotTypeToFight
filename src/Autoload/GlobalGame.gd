@@ -4,10 +4,15 @@ const GROUP_ENEMY := "enemy"
 
 const PATH_HIGHSCORE := "user://highscore.dat"
 const PATH_SETTINGS := "user://settings.dat"
+# niveaux débloqués et meilleur score de chaque niveau, par disposition de clavier
+const PATH_PROGRESS := "user://progress.dat"
 
 enum LEVEL_DIFFICULTY {EASY, NORMAL}
 
 enum KEYBOARD_LAYOUT {AZERTY, QWERTY}
+
+# apprentissage lettre par lettre, ou mots de plus en plus longs
+enum GAME_MODE {LEARN, WORDS}
 
 const LEVEL_EASY_PLAYER_START_LIFE = 100
 const LEVEL_NORMAL_PLAYER_START_LIFE = 80
@@ -37,6 +42,12 @@ var _required_accuracy := 0.94
 var _tutorial_enabled := true
 
 var currentLevel = 1
+var _game_mode := GAME_MODE.LEARN
+
+# disposition (en texte, pour le JSON) ou "words" pour le mode Mots
+# -> {"unlocked": niveau max, "best_scores": {niveau: score}}
+const PROGRESS_KEY_WORDS := "words"
+var _progress := {}
 
 
 func _ready():
@@ -44,6 +55,7 @@ func _ready():
 	var system_language = OS.get_locale_language()
 	_language = system_language if LANGUAGES.has(system_language) else DEFAULT_LANGUAGE
 	loadSettings()
+	_load_progress()
 	TranslationServer.set_locale(_language)
 
 
@@ -53,6 +65,18 @@ func saveLevel(newLevel):
 
 func getLevel():
 	return currentLevel
+
+
+func getGameMode() -> GAME_MODE:
+	return _game_mode
+
+
+func setGameMode(mode: GAME_MODE):
+	_game_mode = mode
+
+
+func isWordsMode() -> bool:
+	return _game_mode == GAME_MODE.WORDS
 
 
 func getLevelDifficulty():
@@ -122,9 +146,58 @@ func setKeyboardShown(shown: bool):
 	saveSettings()
 
 
-func resetGame():
-	currentLevel = 1
-	GlobalPlayer.reset_game()
+# keep_weak_keys : après un game over, on garde les points faibles du joueur
+func resetGame(level := 1, keep_weak_keys := false):
+	currentLevel = level
+	GlobalPlayer.reset_game(keep_weak_keys)
+
+
+# progression du mode en cours : par disposition de clavier en apprentissage,
+# commune aux deux dispositions en mode Mots
+func _get_layout_progress() -> Dictionary:
+	var key = PROGRESS_KEY_WORDS if isWordsMode() else str(_keyboard_layout)
+	if not _progress.get(key) is Dictionary:
+		_progress[key] = {}
+	var layout_progress: Dictionary = _progress[key]
+	if not layout_progress.get("best_scores") is Dictionary:
+		layout_progress["best_scores"] = {}
+	return layout_progress
+
+
+# plus haut niveau atteint : tous les niveaux jusqu'à lui sont accessibles
+func getUnlockedLevel() -> int:
+	return max(1, int(_get_layout_progress().get("unlocked", 1)))
+
+
+func unlockLevel(level: int):
+	if level <= getUnlockedLevel():
+		return
+	_get_layout_progress()["unlocked"] = level
+	_save_progress()
+
+
+func getLevelBestScore(level: int) -> int:
+	return int(_get_layout_progress().best_scores.get(str(level), 0))
+
+
+# renvoie vrai si c'est un nouveau record pour ce niveau
+func saveLevelScore(level: int, score: int) -> bool:
+	if score <= getLevelBestScore(level):
+		return false
+	_get_layout_progress().best_scores[str(level)] = score
+	_save_progress()
+	return true
+
+
+func _save_progress():
+	saveFile(PATH_PROGRESS, JSON.stringify(_progress))
+
+
+func _load_progress():
+	if not FileAccess.file_exists(PATH_PROGRESS):
+		return
+	var parsed = JSON.parse_string(load_file(PATH_PROGRESS))
+	_progress = parsed if parsed is Dictionary else {}
 
 
 func saveSettings():
@@ -162,16 +235,30 @@ func saveHighScore(newScoreValue, level):
 	]
 
 	var highScoreList = getHighScoreList()
-	highScoreList.append({"score": newScoreValue, "level": level, "date": dateTimeString})
+	highScoreList.append({"score": newScoreValue, "level": level, "mode": _game_mode, "date": dateTimeString})
 	highScoreList.sort_custom(func(a, b): return a.score > b.score)
-	highScoreList = highScoreList.slice(0, 10)
+	# les 10 meilleurs de chaque mode
+	var kept := []
+	var count_by_mode := {}
+	for entry in highScoreList:
+		var mode = int(entry.get("mode", GAME_MODE.LEARN))
+		count_by_mode[mode] = count_by_mode.get(mode, 0) + 1
+		if count_by_mode[mode] <= 10:
+			kept.append(entry)
+	highScoreList = kept
 
 	saveFile(PATH_HIGHSCORE, JSON.stringify(highScoreList))
 
 
-func getHighestScore() -> int:
+# meilleur score d'une partie dans le mode donné (le mode en cours par défaut) ;
+# les anciens scores, sans mode, sont ceux de l'apprentissage
+func getHighestScore(mode: int = -1) -> int:
+	if mode == -1:
+		mode = _game_mode
 	var highestScore = 0
 	for highScoreLoop in getHighScoreList():
+		if int(highScoreLoop.get("mode", GAME_MODE.LEARN)) != mode:
+			continue
 		if highScoreLoop.score > highestScore:
 			highestScore = highScoreLoop.score
 	return int(highestScore)
