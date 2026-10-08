@@ -8,24 +8,26 @@ signal key_validated(key: String)
 signal key_missed(key: String)
 signal key_too_early(key: String)
 
-const TILE_SIZE := Vector2(20, 20)
-const TILE_SPACING := 24.0
-const TILE_Y := 8.0
+const TILE_SIZE := Vector2(24, 24)
+const TILE_SPACING := 27.0
+const TILE_Y := 3.0
+const TILE_FONT_SIZE := 10
 # ligne de frappe : position x des tuiles dont l'ennemi est à portée
-const HIT_X := 16.0
+const HIT_X := 13.0
 # pixels de piste par pixel de distance entre le joueur et l'ennemi
-const LANE_SCALE := 1.2
+const LANE_SCALE := 0.9
 # vitesse de glissement des tuiles vers leur position (plus grand = plus vif)
 const SLIDE_SHARPNESS := 14.0
 
 # fond de tuile = couleur du doigt assombrie, bordure = couleur du doigt
-const TILE_DARKEN := 0.45
+const TILE_DARKEN := 0.2
 const COLOR_CURRENT := Color.WHITE
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 const COLOR_GOOD := Color(0.3, 0.9, 0.4)
 const COLOR_TOO_EARLY := Color(1, 0.6, 0.15)
-const COLOR_HIT_LINE := Color(1, 1, 1, 0.35)
-const COLOR_HIT_LINE_ACTIVE := Color(0.3, 0.9, 0.4, 0.9)
+# cadre cible autour de l'emplacement de frappe (comme les récepteurs des jeux de rythme)
+const COLOR_HIT_TARGET := Color(1, 1, 1, 0.35)
+const COLOR_HIT_TARGET_ACTIVE := Color(0.3, 0.9, 0.4, 0.9)
 
 # éclats autour d'une tuile validée
 const BURST_COUNT := 8
@@ -33,7 +35,7 @@ const BURST_DISTANCE := 24.0
 const BURST_SIZE := Vector2(3, 3)
 
 @onready var _tiles_container: Control = $Tiles
-@onready var _hit_line: ColorRect = $HitLine
+@onready var _hit_target_style: StyleBoxFlat = $HitTarget.get_theme_stylebox("panel")
 
 # [{node, enemy, key}]
 var _tiles: Array = []
@@ -62,7 +64,7 @@ func _process(delta):
 		previous_enemy = tile_data.enemy
 
 	var in_range = not _tiles.is_empty() and get_current_distance() <= 0
-	_hit_line.color = COLOR_HIT_LINE_ACTIVE if in_range else COLOR_HIT_LINE
+	_hit_target_style.border_color = COLOR_HIT_TARGET_ACTIVE if in_range else COLOR_HIT_TARGET
 
 
 # touche à taper : {key, enemy} ou {} s'il n'y en a pas
@@ -188,16 +190,22 @@ func _create_tile(key: String) -> Panel:
 	var finger_color = GlobalLessons.get_finger_color(key)
 	style.bg_color = finger_color.darkened(TILE_DARKEN)
 	style.border_color = finger_color
-	style.set_border_width_all(1)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(3)
 	tile.add_theme_stylebox_override("panel", style)
 
 	var label := Label.new()
 	label.text = key.to_upper()
+	label.add_theme_font_size_override("font_size", TILE_FONT_SIZE)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 3)
+	label.add_theme_constant_override("outline_size", 4)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	# ancré sur toute la tuile et agrandi des deux côtés si la police dépasse :
+	# le texte reste centré
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	label.grow_vertical = Control.GROW_DIRECTION_BOTH
 	tile.add_child(label)
 	return tile
 
@@ -207,4 +215,4 @@ func _refresh_current():
 		var tile: Panel = _tiles[i].node
 		var style: StyleBoxFlat = tile.get_theme_stylebox("panel")
 		style.border_color = COLOR_CURRENT if i == 0 else GlobalLessons.get_finger_color(_tiles[i].key)
-		style.set_border_width_all(2 if i == 0 else 1)
+		style.set_border_width_all(3 if i == 0 else 2)

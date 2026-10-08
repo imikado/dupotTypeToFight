@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://src/UI/level_stats.tscn" id="5_stats"]
 [ext_resource type="PackedScene" path="res://src/UI/key_prompt.tscn" id="6_prompt"]
 [ext_resource type="Script" path="res://src/UI/mini_keyboard.gd" id="7_mini"]
+[ext_resource type="Script" path="res://src/UI/key_stats_panel.gd" id="9_key_stats"]
 [ext_resource type="Texture2D" path="res://src/UI/Controls/Shared/icon-keyboard.png" id="8_icon_keyboard"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
@@ -131,6 +132,20 @@ autowrap_mode = 0
 
 [node name="KeyTrack" parent="." instance=ExtResource("3_track")]
 
+[node name="KeyStats" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -37.0
+offset_right = 114.0
+offset_bottom = -7.0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("9_key_stats")
+
 [node name="MiniKeyboard" type="Control" parent="."]
 visible = false
 layout_mode = 3
@@ -139,10 +154,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -120.0
-offset_top = -40.0
-offset_right = -6.0
-offset_bottom = -8.0
+offset_left = -114.0
+offset_top = -37.0
+offset_right = -2.0
+offset_bottom = -7.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2

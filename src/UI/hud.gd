@@ -17,6 +17,7 @@ const LIFE_LOW_RATIO := 0.3
 @onready var level_stats = $LevelStats
 @onready var _key_prompt = $KeyPrompt
 @onready var _mini_keyboard = $MiniKeyboard
+@onready var key_stats = $KeyStats
 @onready var _keyboard_button: Button = $KeyboardButton
 
 @onready var _life_bar: ProgressBar = $LifeBar

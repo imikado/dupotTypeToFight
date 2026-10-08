@@ -20,6 +20,9 @@ const EXPLOSION_SHARDS := 12
 const EXPLOSION_DISTANCE := 42.0
 const SHARD_SIZE := Vector2(4, 4)
 const GAP_DURATION := 0.12
+# chaque nouvelle touche tombe du haut de l'écran jusqu'à sa place
+const FALL_HEIGHT := 90.0
+const FALL_DURATION := 0.22
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 const COLOR_TOO_EARLY := Color(1, 0.6, 0.15)
 
@@ -35,11 +38,15 @@ var _flash_color := Color.TRANSPARENT
 var _time := 0.0
 # temps restant pendant lequel le centre reste vide après une touche validée
 var _gap := 0.0
+# position de repos (la touche tombe jusqu'ici)
+var _base_y := 0.0
+var _move_tween: Tween
 
 
 func _ready():
 	modulate.a = 0
 	pivot_offset = size / 2
+	_base_y = position.y
 	_box_style.set_border_width_all(2)
 	_box_style.set_corner_radius_all(4)
 
@@ -81,10 +88,15 @@ func _show_key(key: String):
 	var finger_color = GlobalLessons.get_finger_color(key)
 	_box_style.bg_color = finger_color.darkened(0.45)
 	_box_style.border_color = finger_color
-	# la nouvelle touche arrive en grossissant
-	scale = Vector2(0.6, 0.6)
-	var tween = create_tween()
-	tween.tween_property(self, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	# la nouvelle touche tombe du haut, puis s'écrase légèrement en arrivant
+	if _move_tween:
+		_move_tween.kill()
+	position.y = _base_y - FALL_HEIGHT
+	scale = Vector2(0.85, 1.15)
+	_move_tween = create_tween()
+	_move_tween.tween_property(self, "position:y", _base_y, FALL_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_move_tween.tween_property(self, "scale", Vector2(1.2, 0.8), 0.05)
+	_move_tween.tween_property(self, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _draw():
@@ -186,6 +198,8 @@ func _on_key_missed(_key_expected: String):
 
 func _on_key_too_early(_key_expected: String):
 	_flash(COLOR_TOO_EARLY)
-	var tween = create_tween()
-	tween.tween_property(self, "position:y", position.y - 5, 0.07).set_ease(Tween.EASE_OUT)
-	tween.tween_property(self, "position:y", position.y, 0.1).set_ease(Tween.EASE_IN)
+	if _move_tween:
+		_move_tween.kill()
+	_move_tween = create_tween()
+	_move_tween.tween_property(self, "position:y", _base_y - 5, 0.07).set_ease(Tween.EASE_OUT)
+	_move_tween.tween_property(self, "position:y", _base_y, 0.1).set_ease(Tween.EASE_IN)

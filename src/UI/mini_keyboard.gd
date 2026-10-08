@@ -16,16 +16,23 @@ const COLOR_KEY := Color(0.164706, 0.172549, 0.4, 0.6)
 const COLOR_BORDER := Color(0.34, 0.39, 0.73, 0.8)
 const AVAILABLE_DARKEN := 0.4
 const DIM_ALPHA := 0.35
+# fond sombre derrière les touches, même style que la piste des touches
+const BACKGROUND_MARGIN := 2.0
 
 # touche -> {panel, style}
 var _keys := {}
 var _available: Array = []
 var _current_key := ""
 var _key_track
+var _background := StyleBoxFlat.new()
 
 
 func _ready():
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_background.bg_color = Color(0.0627451, 0.0862745, 0.2, 0.92)
+	_background.border_color = Color(0.34, 0.39, 0.73)
+	_background.set_border_width_all(1)
+	_background.set_corner_radius_all(5)
 	_build_keys()
 
 
@@ -46,6 +53,10 @@ func _process(_delta):
 	if key != _current_key:
 		_current_key = key
 		_refresh()
+
+
+func _draw():
+	draw_style_box(_background, Rect2(-Vector2.ONE * BACKGROUND_MARGIN, size + Vector2.ONE * BACKGROUND_MARGIN * 2))
 
 
 func _build_keys():

@@ -26,7 +26,8 @@ const SPAWN_MIN_DELAY := 0.4
 const SPAWN_MIN_SPACING := 40.0
 const LEVEL_UP_HEAL := 20
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
-const READY_KEYS := ["f", "j"]
+# (avec, en plus, les nouvelles touches du niveau, pour savoir les trouver)
+const HOME_KEYS := ["f", "j"]
 # durée d'affichage du clavier en transparence au début du niveau
 const LAYOUT_DURATION := 4.0
 # précision minimale pour passer au niveau suivant ; en dessous, le niveau est rejoué
@@ -54,6 +55,7 @@ var _is_level_complete := false
 var _spawn_cooldown := 0.0
 var _time_since_spawn := 0.0
 var _is_waiting_ready := false
+var _ready_keys: Array = []
 var _ready_pressed: Array = []
 var _is_showing_stats := false
 var _can_close_stats := false
@@ -139,6 +141,7 @@ func _start_level(level: int, focus_keys: Array = []):
 	_good_keys = 0
 	_errors = 0
 	_missed.clear()
+	_hud.key_stats.reset()
 	GlobalGame.saveLevel(level)
 
 	var new_keys = GlobalLessons.get_new_keys(level)
@@ -154,7 +157,11 @@ func _start_level(level: int, focus_keys: Array = []):
 
 	_is_level_starting = true
 	_hud.show_banner(tr("LEVEL") % level, subtitle)
-	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, READY_KEYS)
+	_ready_keys = HOME_KEYS.duplicate()
+	for key in new_keys:
+		if not _ready_keys.has(key):
+			_ready_keys.append(key)
+	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, _ready_keys)
 
 	# le niveau ne démarre que quand le joueur a posé ses index sur F et J
 	_ready_pressed.clear()
@@ -169,11 +176,11 @@ func _start_level(level: int, focus_keys: Array = []):
 
 
 func _on_ready_key_typed(typed: String):
-	if not READY_KEYS.has(typed) or _ready_pressed.has(typed):
+	if not _ready_keys.has(typed) or _ready_pressed.has(typed):
 		return
 	_ready_pressed.append(typed)
 	_hud.keyboard_overlay.mark_ready_key(typed)
-	if _ready_pressed.size() == READY_KEYS.size():
+	if _ready_pressed.size() == _ready_keys.size():
 		_is_waiting_ready = false
 		player_ready.emit()
 
@@ -255,6 +262,7 @@ func _on_key_typed(typed: String):
 	var expected = target.get_next_key()
 	if typed != expected:
 		_errors += 1
+		_hud.key_stats.record(expected, false)
 		_missed[expected] = _missed.get(expected, 0) + 1
 		GlobalPlayer.add_key_error(expected)
 		GlobalPlayer.reset_combo()
@@ -272,6 +280,7 @@ func _on_key_typed(typed: String):
 		return
 
 	_good_keys += 1
+	_hud.key_stats.record(typed, true)
 	GlobalPlayer.add_key_success(typed)
 	GlobalPlayer.add_good_key()
 	_key_track.pop_key()

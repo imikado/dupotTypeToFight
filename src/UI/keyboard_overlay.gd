@@ -30,10 +30,10 @@ const HOME_INDEX_LEFT := 3
 const HOME_INDEX_RIGHT := 6
 
 # position verticale selon l'usage (sous la bannière de niveau / au-dessus du combat)
-# en cas d'erreur : sous la grande touche du centre, au-dessus des personnages,
-# sans les mains pour rester compact
+# en cas d'erreur (et clavier transparent) : au-dessus de la grande touche, qui
+# est juste au-dessus des personnages ; sans les mains pour rester compact
 const INTRO_Y := 84.0
-const ERROR_Y := 102.0
+const ERROR_Y := 38.0
 const INTRO_HEIGHT := 100.0
 const ERROR_HEIGHT := 64.0
 
@@ -211,13 +211,20 @@ func show_level_keys(keys: Array, new_keys: Array, ready_keys: Array):
 	for key in ready_keys:
 		if not _key_pulses.has(key):
 			_pulse(key)
-	var ready_text = (" %s " % tr("AND")).join(ready_keys.map(func(key): return key.to_upper()))
-	set_message(tr("READY") % ready_text, COLOR_MESSAGE_READY, MESSAGE_FONT_SIZE_READY)
+	set_message(tr("READY") % _join_keys(ready_keys), COLOR_MESSAGE_READY, MESSAGE_FONT_SIZE_READY)
 
 	if _tween:
 		_tween.kill()
 	_tween = create_tween()
 	_tween.tween_property(self, "modulate:a", MAX_ALPHA, 0.2)
+
+
+# « F et J », « F, J, D et K »
+func _join_keys(keys: Array) -> String:
+	var letters = keys.map(func(key): return key.to_upper())
+	if letters.size() <= 1:
+		return "".join(letters)
+	return ", ".join(letters.slice(0, -1)) + " %s %s" % [tr("AND"), letters.back()]
 
 
 # le joueur a appuyé sur une des touches « prêt » : elle s'allume et ne pulse plus
