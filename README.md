@@ -6,15 +6,13 @@
 
 **An arcade game to learn touch typing: type the right key to strike the enemies.**
 
-Free · All ages · Linux x86_64 · Browser · Made with Godot 4.7
+Free · All ages · Play in your browser · Made with Godot 4.7
 
-[![Flathub](https://img.shields.io/flathub/v/org.dupot.typetofight?logo=flathub&logoColor=white&label=Flathub&color=4a90d9)](https://flathub.org/apps/org.dupot.typetofight)
-[![Snap Store](https://img.shields.io/badge/Snap%20Store-dupot--type--to--fight-82BEA0?logo=snapcraft&logoColor=white)](https://snapcraft.io/dupot-type-to-fight)
+[![itch.io](https://img.shields.io/badge/itch.io-Play%20in%20browser-FA5C5C?logo=itchdotio&logoColor=white)](https://dupot-org.itch.io/type-to-fight)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godotengine&logoColor=white)](https://godotengine.org)
 [![License: LGPL-2.1](https://img.shields.io/badge/License-LGPL--2.1-blue.svg)](LICENSE)
 
-<a href="https://flathub.org/apps/org.dupot.typetofight"><img width="200" alt="Get it on Flathub" src="https://flathub.org/api/badge?locale=en"/></a>
-<a href="https://snapcraft.io/dupot-type-to-fight"><img width="200" alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg"/></a>
+**▶️ [Play now on itch.io](https://dupot-org.itch.io/type-to-fight)**
 
 <img src="docs/gameplay.gif" alt="Type to Fight gameplay" width="720" />
 
@@ -59,26 +57,15 @@ Enemies keep coming from the right. The next key to type **falls in the center o
 
 The keyboard layout (AZERTY / QWERTY), the difficulty and the language are chosen in the main menu.
 
-## 📦 Install
+## 📦 Play
 
-### Flathub (Linux, recommended)
+### itch.io (browser)
 
-```bash
-flatpak install flathub org.dupot.typetofight
-flatpak run org.dupot.typetofight
-```
+Play it in your browser, no install needed: **[dupot-org.itch.io/type-to-fight](https://dupot-org.itch.io/type-to-fight)**
 
-You can also install it from GNOME Software, KDE Discover or any app store that uses Flathub.
+### Flathub and Snap Store (Linux): coming soon
 
-### Snap Store (Linux)
-
-```bash
-sudo snap install dupot-type-to-fight
-```
-
-### Browser (HTML5)
-
-The game also runs in a web browser: see `export_html5.sh` below to build it.
+Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `dupot-type-to-fight` on the Snap Store). The packaging files are already in `export/Linux`; publication is waiting for the final logo.
 
 ## 🛠️ Build from source
 
@@ -93,7 +80,7 @@ Export presets for **Linux** and **HTML5** are included in `export_presets.cfg`,
 
 | Script | Result |
 |---|---|
-| `./export_html5.sh` | HTML5 export in `export/HTML5/` and `dupotTypeToFight-html5.zip` (for itch.io) |
+| `./export_html5.sh` | HTML5 export in `export/HTML5/` and `dupotTypeToFight-html5.zip` (the build uploaded to itch.io) |
 | `./bundle.sh` | `export/Linux/bundle.tar.gz` for the Flathub manifest (pck, icons, appdata, .desktop) |
 | `./export/Linux/snap/update-version.sh` | syncs the snap version with `config/version` in `project.godot` |
 | `./export/Linux/snap/build-snap.sh` | exports the Linux build and packs the snap |
