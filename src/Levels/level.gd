@@ -168,6 +168,7 @@ func _on_key_typed(typed: String):
 		# bonne touche mais ennemi hors de portée : coup dans le vide
 		GlobalPlayer.reset_combo()
 		_player.whiff()
+		_key_track.too_early()
 		return
 
 	GlobalPlayer.add_good_key()
