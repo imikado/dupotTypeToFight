@@ -61,6 +61,20 @@ const FINGERS := {
 }
 
 
+# une couleur par doigt : tons chauds pour la main gauche, froids pour la droite
+const FINGER_COLORS := {
+	"auriculaire gauche": Color(0.9, 0.3, 0.35),
+	"annulaire gauche": Color(0.95, 0.55, 0.2),
+	"majeur gauche": Color(0.9, 0.8, 0.25),
+	"index gauche": Color(0.5, 0.82, 0.3),
+	"index droit": Color(0.25, 0.75, 0.9),
+	"majeur droit": Color(0.35, 0.5, 0.95),
+	"annulaire droit": Color(0.62, 0.42, 0.92),
+	"auriculaire droit": Color(0.88, 0.42, 0.82),
+}
+const COLOR_UNKNOWN_FINGER := Color(0.34, 0.39, 0.73)
+
+
 func _get_lessons() -> Array:
 	return LESSONS[GlobalGame.getKeyboardLayout()]
 
@@ -100,3 +114,7 @@ func get_finger(key: String) -> String:
 		if fingers[finger].contains(key):
 			return finger
 	return ""
+
+
+func get_finger_color(key: String) -> Color:
+	return FINGER_COLORS.get(get_finger(key), COLOR_UNKNOWN_FINGER)

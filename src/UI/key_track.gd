@@ -9,21 +9,15 @@ const GROUP_SPACING := 10.0
 const START_X := 12.0
 const TILE_Y := 8.0
 
-const COLOR_TILE := Color(0.164706, 0.172549, 0.4)
-const COLOR_TILE_NEW := Color(0.6, 0.25, 0.05)
-const COLOR_BORDER := Color(0.34, 0.39, 0.73)
-const COLOR_CURRENT := Color(1, 0.823529, 0.247059)
+# fond de tuile = couleur du doigt assombrie, bordure = couleur du doigt
+const TILE_DARKEN := 0.45
+const COLOR_CURRENT := Color.WHITE
 const COLOR_WRONG := Color(0.85, 0.1, 0.2)
 
 @onready var _tiles_container: Control = $Tiles
 
 # [{node, enemy, key}]
 var _tiles: Array = []
-var _new_keys: Array = []
-
-
-func set_new_keys(new_keys: Array):
-	_new_keys = new_keys
 
 
 func add_enemy(enemy: Enemy):
@@ -83,13 +77,16 @@ func _create_tile(key: String) -> Panel:
 	var tile := Panel.new()
 	tile.size = TILE_SIZE
 	var style := StyleBoxFlat.new()
-	style.bg_color = COLOR_TILE_NEW if _new_keys.has(key) else COLOR_TILE
-	style.border_color = COLOR_BORDER
+	var finger_color = GlobalLessons.get_finger_color(key)
+	style.bg_color = finger_color.darkened(TILE_DARKEN)
+	style.border_color = finger_color
 	style.set_border_width_all(1)
 	tile.add_theme_stylebox_override("panel", style)
 
 	var label := Label.new()
 	label.text = key.to_upper()
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 3)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -116,5 +113,5 @@ func _refresh_current():
 	for i in _tiles.size():
 		var tile: Panel = _tiles[i].node
 		var style: StyleBoxFlat = tile.get_theme_stylebox("panel")
-		style.border_color = COLOR_CURRENT if i == 0 else COLOR_BORDER
+		style.border_color = COLOR_CURRENT if i == 0 else GlobalLessons.get_finger_color(_tiles[i].key)
 		style.set_border_width_all(2 if i == 0 else 1)

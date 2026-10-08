@@ -42,6 +42,6 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.6, 0.6, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 6
-text = "S au lieu de F"
+text = ""
 horizontal_alignment = 1
 vertical_alignment = 1

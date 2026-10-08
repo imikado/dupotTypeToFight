@@ -5,6 +5,13 @@ signal menu_requested
 
 const COLOR_NEW_KEY := "#ff9a3c"
 
+# couleur de la barre de vie selon la part de vie restante
+const COLOR_LIFE_HIGH := Color(0.2, 0.76, 0.28)
+const COLOR_LIFE_MEDIUM := Color(0.95, 0.55, 0.15)
+const COLOR_LIFE_LOW := Color(0.85, 0.15, 0.25)
+const LIFE_MEDIUM_RATIO := 0.6
+const LIFE_LOW_RATIO := 0.3
+
 @onready var key_track = $KeyTrack
 @onready var keyboard_overlay = $KeyboardOverlay
 
@@ -20,6 +27,8 @@ const COLOR_NEW_KEY := "#ff9a3c"
 @onready var _pause_panel: Control = $PausePanel
 @onready var _resume_button: Button = $PausePanel/VBoxContainer/ResumeButton
 
+var _life_fill: StyleBoxFlat
+
 
 func _ready():
 	GlobalEvents.player_health_changed.connect(_on_player_health_changed)
@@ -28,6 +37,10 @@ func _ready():
 
 	_life_bar.max_value = GlobalPlayer.get_max_life()
 	_life_bar.value = GlobalPlayer.get_life()
+	# copie du style pour pouvoir changer sa couleur sans toucher à la ressource de la scène
+	_life_fill = _life_bar.get_theme_stylebox("fill").duplicate()
+	_life_bar.add_theme_stylebox_override("fill", _life_fill)
+	_life_fill.bg_color = _get_life_color(GlobalPlayer.get_life())
 	_on_score_changed(GlobalPlayer.get_score())
 	_on_combo_changed(GlobalPlayer.get_combo())
 	_banner.modulate.a = 0
@@ -35,7 +48,7 @@ func _ready():
 
 
 func set_level(level: int, keys: Array, new_keys: Array):
-	_level_label.text = "Niveau %d" % level
+	_level_label.text = tr("LEVEL") % level
 	var text := ""
 	for key in keys:
 		var letter = key.to_upper()
@@ -51,12 +64,16 @@ func set_level_progress(killed: int, needed: int):
 	tween.tween_property(_level_progress, "value", killed, 0.2)
 
 
-func show_banner(title: String, subtitle: String, duration := 2.5):
+# la bannière reste affichée jusqu'à hide_banner()
+func show_banner(title: String, subtitle: String):
 	_banner_title.text = title
 	_banner_subtitle.text = subtitle
 	var tween = create_tween()
 	tween.tween_property(_banner, "modulate:a", 1.0, 0.3)
-	tween.tween_interval(duration)
+
+
+func hide_banner():
+	var tween = create_tween()
 	tween.tween_property(_banner, "modulate:a", 0.0, 0.4)
 	await tween.finished
 
@@ -68,8 +85,18 @@ func set_paused(paused: bool):
 
 
 func _on_player_health_changed(new_value):
-	var tween = create_tween()
+	var tween = create_tween().set_parallel()
 	tween.tween_property(_life_bar, "value", new_value, 0.25)
+	tween.tween_property(_life_fill, "bg_color", _get_life_color(new_value), 0.25)
+
+
+func _get_life_color(life: float) -> Color:
+	var ratio = life / _life_bar.max_value
+	if ratio > LIFE_MEDIUM_RATIO:
+		return COLOR_LIFE_HIGH
+	if ratio > LIFE_LOW_RATIO:
+		return COLOR_LIFE_MEDIUM
+	return COLOR_LIFE_LOW
 
 
 func _on_score_changed(new_value):

@@ -21,11 +21,21 @@ var enemy_speed_coef = LEVEL_EASY_SPEED_COEF
 var _level_difficulty = LEVEL_DIFFICULTY.EASY
 var _keyboard_layout = KEYBOARD_LAYOUT.AZERTY
 
+# langues disponibles (colonnes de src/Locales/translations.csv)
+const LANGUAGES := ["en", "fr"]
+const DEFAULT_LANGUAGE := "en"
+
+var _language := DEFAULT_LANGUAGE
+
 var currentLevel = 1
 
 
 func _ready():
+	# par défaut, la langue du système si elle est traduite
+	var system_language = OS.get_locale_language()
+	_language = system_language if LANGUAGES.has(system_language) else DEFAULT_LANGUAGE
 	loadSettings()
+	TranslationServer.set_locale(_language)
 
 
 func saveLevel(newLevel):
@@ -64,13 +74,25 @@ func loadKeyboardLayout(layout: KEYBOARD_LAYOUT):
 	saveSettings()
 
 
+func getLanguage() -> String:
+	return _language
+
+
+func loadLanguage(language: String):
+	if not LANGUAGES.has(language):
+		return
+	_language = language
+	TranslationServer.set_locale(language)
+	saveSettings()
+
+
 func resetGame():
 	currentLevel = 1
 	GlobalPlayer.reset_game()
 
 
 func saveSettings():
-	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout}
+	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language}
 	saveFile(PATH_SETTINGS, JSON.stringify(settings))
 
 
@@ -81,7 +103,10 @@ func loadSettings():
 	if not parsed is Dictionary:
 		return
 	_keyboard_layout = int(parsed.get("layout", KEYBOARD_LAYOUT.AZERTY)) as KEYBOARD_LAYOUT
-	# loadDifficulty sauvegarde : on positionne la disposition avant
+	var language = parsed.get("language", _language)
+	if LANGUAGES.has(language):
+		_language = language
+	# loadDifficulty sauvegarde : on positionne la disposition et la langue avant
 	loadDifficulty(int(parsed.get("difficulty", LEVEL_DIFFICULTY.EASY)) as LEVEL_DIFFICULTY)
 
 

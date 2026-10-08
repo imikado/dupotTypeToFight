@@ -12,6 +12,8 @@ const ATTACK_COOLDOWN := 1.0
 @export var key_count := 1
 @export var damage := 10
 @export var speed := 30.0
+# distance au centre du joueur où l'ennemi s'arrête pour attaquer (au contact du sprite)
+@export var attack_distance := 22.0
 # frame de l'animation "attack" où le coup porte (comme la HitBox de dupotBeatAndMatchToPass)
 @export var attack_hit_frame := 3
 

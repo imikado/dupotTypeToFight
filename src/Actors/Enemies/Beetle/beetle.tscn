@@ -169,6 +169,7 @@ script = ExtResource("1_script")
 key_count = 3
 damage = 25
 speed = 20.0
+attack_distance = 26.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_main")

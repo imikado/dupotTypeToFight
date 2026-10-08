@@ -5,9 +5,12 @@ extends Node2D
 @export_file("*.tscn") var menu_scene_path: String
 
 const SPAWN_X := 520.0
-const ATTACK_DISTANCE := 34.0
 const MAX_ENEMIES := 5
 const LEVEL_UP_HEAL := 20
+# touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
+const READY_KEYS := ["f", "j"]
+
+signal player_ready
 
 @onready var _player = $Player
 @onready var _enemies: Node2D = $Enemies
@@ -21,6 +24,10 @@ var _killed_in_level := 0
 var _queue: Array[Enemy] = []
 var _is_gameover := false
 var _is_level_starting := false
+# assez d'ennemis tués : on attend que la file se vide avant le niveau suivant
+var _is_level_complete := false
+var _is_waiting_ready := false
+var _ready_pressed: Array = []
 
 
 func _ready():
@@ -46,37 +53,58 @@ func _unhandled_input(event):
 	if _is_gameover or get_tree().paused or event.unicode == 0:
 		return
 
-	_on_key_typed(String.chr(event.unicode).to_lower())
+	var typed = String.chr(event.unicode).to_lower()
+	if _is_waiting_ready:
+		_on_ready_key_typed(typed)
+	else:
+		_on_key_typed(typed)
 	get_viewport().set_input_as_handled()
 
 
 func _start_level(level: int):
 	_level = level
 	_killed_in_level = 0
+	_is_level_complete = false
 	GlobalGame.saveLevel(level)
 
 	var new_keys = GlobalLessons.get_new_keys(level)
-	_key_track.set_new_keys(new_keys)
 	_hud.set_level(level, GlobalLessons.get_keys(level), new_keys)
 	_hud.set_level_progress(0, _get_kills_to_pass())
 	GlobalEvents.level_changed.emit(level, new_keys)
 
-	var subtitle = "Toutes les touches, plus vite !"
+	var subtitle = tr("LEVEL_ALL_KEYS")
 	if not new_keys.is_empty():
-		subtitle = "Nouvelles touches : %s" % " ".join(new_keys).to_upper()
+		subtitle = tr("LEVEL_NEW_KEYS") % " ".join(new_keys).to_upper()
 
 	_is_level_starting = true
 	_spawn_timer.stop()
-	# on laisse plus de temps pour lire le clavier quand de nouvelles touches arrivent
-	var banner_duration = 2.5 if new_keys.is_empty() else 4.0
-	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, banner_duration, level == 1)
-	await _hud.show_banner("Niveau %d" % level, subtitle, banner_duration)
+	_hud.show_banner(tr("LEVEL") % level, subtitle)
+	_hud.keyboard_overlay.show_level_keys(GlobalLessons.get_keys(level), new_keys, READY_KEYS)
+
+	# le niveau ne démarre que quand le joueur a posé ses index sur F et J
+	_ready_pressed.clear()
+	_is_waiting_ready = true
+	await player_ready
+	_hud.keyboard_overlay.set_message(tr("GO"), Color.WHITE)
+	await get_tree().create_timer(0.6).timeout
+	_hud.keyboard_overlay.hide_keyboard()
+	await _hud.hide_banner()
 	_is_level_starting = false
 	if _is_gameover:
 		return
 	_spawn_timer.wait_time = _get_spawn_interval()
 	_spawn_timer.start()
 	_spawn_enemy()
+
+
+func _on_ready_key_typed(typed: String):
+	if not READY_KEYS.has(typed) or _ready_pressed.has(typed):
+		return
+	_ready_pressed.append(typed)
+	_hud.keyboard_overlay.mark_ready_key(typed)
+	if _ready_pressed.size() == READY_KEYS.size():
+		_is_waiting_ready = false
+		player_ready.emit()
 
 
 func _get_kills_to_pass() -> int:
@@ -106,7 +134,7 @@ func _pick_enemy_scene() -> PackedScene:
 
 
 func _spawn_enemy():
-	if _is_gameover or _queue.size() >= MAX_ENEMIES:
+	if _is_gameover or _is_level_starting or _is_level_complete or _queue.size() >= MAX_ENEMIES:
 		return
 
 	var enemy: Enemy = _pick_enemy_scene().instantiate()
@@ -115,7 +143,7 @@ func _spawn_enemy():
 		keys.append(GlobalLessons.pick_key(_level))
 
 	enemy.position = Vector2(SPAWN_X, _player.position.y)
-	enemy.setup(keys, _player.position.x + ATTACK_DISTANCE, _get_speed_coef())
+	enemy.setup(keys, _player.position.x + enemy.attack_distance, _get_speed_coef())
 	if not _queue.is_empty():
 		enemy.front_enemy = _queue.back()
 
@@ -165,10 +193,16 @@ func _remove_from_queue(enemy: Enemy):
 func _on_enemy_die(enemy: Enemy):
 	_remove_from_queue(enemy)
 	GlobalPlayer.add_kill()
-	_killed_in_level += 1
-	_hud.set_level_progress(_killed_in_level, _get_kills_to_pass())
+	if not _is_level_complete and not _is_level_starting:
+		_killed_in_level += 1
+		_hud.set_level_progress(_killed_in_level, _get_kills_to_pass())
+		if _killed_in_level >= _get_kills_to_pass():
+			# plus d'apparitions : le joueur finit les ennemis restants avant
+			# l'écran « Prêt ? » du niveau suivant
+			_is_level_complete = true
+			_spawn_timer.stop()
 
-	if _killed_in_level >= _get_kills_to_pass() and not _is_level_starting:
+	if _is_level_complete and _queue.is_empty():
 		_level_up()
 
 

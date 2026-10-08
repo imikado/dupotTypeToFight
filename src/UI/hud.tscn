@@ -14,7 +14,7 @@ border_width_bottom = 1
 border_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_life"]
-bg_color = Color(0.85, 0.15, 0.25, 1)
+bg_color = Color(0.2, 0.76, 0.28, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress"]
 bg_color = Color(0.2, 0.76, 0.28, 1)
@@ -79,7 +79,7 @@ offset_top = 2.0
 offset_right = -4.0
 offset_bottom = 18.0
 grow_horizontal = 0
-text = "Niveau 1"
+text = ""
 horizontal_alignment = 2
 
 [node name="LevelProgress" type="ProgressBar" parent="."]
@@ -137,7 +137,7 @@ grow_horizontal = 2
 theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 16
-text = "Niveau 1"
+text = ""
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Banner"]
@@ -148,7 +148,7 @@ offset_top = 64.0
 offset_bottom = 80.0
 grow_horizontal = 2
 theme_override_constants/outline_size = 4
-text = "Nouvelles touches : F J"
+text = ""
 horizontal_alignment = 1
 
 [node name="PausePanel" type="Panel" parent="."]
@@ -177,16 +177,16 @@ theme_override_constants/separation = 8
 [node name="Label" type="Label" parent="PausePanel/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Pause"
+text = "PAUSE"
 horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="PausePanel/VBoxContainer"]
 layout_mode = 2
-text = "Reprendre"
+text = "RESUME"
 
 [node name="MenuButton" type="Button" parent="PausePanel/VBoxContainer"]
 layout_mode = 2
-text = "Menu"
+text = "BACK_TO_MENU"
 
 [connection signal="pressed" from="PausePanel/VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PausePanel/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]

@@ -1,0 +1,24 @@
+keys,en,fr
+MENU_SUBTITLE,Type the right key to hit the enemies,Tape la bonne touche pour frapper les ennemis
+MENU_PLAY,Play,Jouer
+MENU_QUIT,Quit,Quitter
+MENU_BEST_SCORE,Best score: %d,Meilleur score : %d
+DIFFICULTY_EASY,Easy,Facile
+DIFFICULTY_NORMAL,Normal,Normal
+KEYBOARD_AZERTY,AZERTY keyboard,Clavier AZERTY
+KEYBOARD_QWERTY,QWERTY keyboard,Clavier QWERTY
+LEVEL,Level %d,Niveau %d
+LEVEL_NEW_KEYS,New keys: %s,Nouvelles touches : %s
+LEVEL_ALL_KEYS,"All keys, faster!","Toutes les touches, plus vite !"
+READY,READY? Press %s,PRET ? Appuie sur %s
+AND,and,et
+GO,Let's go!,C'est parti !
+WRONG_KEY,%s instead of %s,%s au lieu de %s
+KEY_SPACE,SPACE,ESPACE
+PAUSE,Pause,Pause
+RESUME,Resume,Reprendre
+BACK_TO_MENU,Menu,Menu
+GAME_OVER,Game Over,Game Over
+NEW_RECORD,New record!,Nouveau record !
+REPLAY,Play again,Rejouer
+GAME_OVER_STATS,Level %d   Enemies %d   Best combo %d,Niveau %d   Ennemis %d   Combo max %d

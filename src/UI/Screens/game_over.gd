@@ -11,7 +11,7 @@ extends Control
 
 func _ready():
 	var score = GlobalPlayer.get_score()
-	_stats_label.text = "Niveau %d   Ennemis %d   Combo max %d" % [
+	_stats_label.text = tr("GAME_OVER_STATS") % [
 		GlobalGame.getLevel(), GlobalPlayer.get_killed(), GlobalPlayer.get_best_combo()
 	]
 	_record_label.visible = score > 0 and score >= GlobalGame.getHighestScore()
