@@ -75,6 +75,19 @@ func set_level(level: int, keys: Array, new_keys: Array, keys_text := ""):
 	_keys_label.text = "[right]%s[/right]" % text.strip_edges()
 
 
+# mode triche activé : petit point vert dans le coin en haut à droite
+func show_cheat_indicator():
+	var dot := ColorRect.new()
+	dot.color = Color(0.2, 0.9, 0.3)
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dot.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	dot.offset_left = -4
+	dot.offset_top = 1
+	dot.offset_right = -1
+	dot.offset_bottom = 4
+	add_child(dot)
+
+
 func set_level_progress(killed: int, needed: int):
 	_level_progress.max_value = needed
 	var tween = create_tween()

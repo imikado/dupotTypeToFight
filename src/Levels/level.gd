@@ -7,10 +7,15 @@ extends Node2D
 # positions à l'écran (la caméra suit le joueur, qui reste à gauche de l'écran)
 const PLAYER_SCREEN_X := 240.0
 const SPAWN_SCREEN_X := 500.0
-# au-delà, l'ennemi n'est pas encore à l'écran : pas de ruée possible
-const DASH_MAX_SCREEN_X := 460.0
+# au-delà, l'ennemi n'est pas encore à l'écran : pas de ruée possible (son corps,
+# large de 24 px, entre dans l'écran de 480 px à partir de là) ; en mode Arcade,
+# le mot écrit au-dessus de l'ennemi est lisible dès son apparition : ruée toujours possible
+const DASH_MAX_SCREEN_X := 492.0
 # le joueur court tant que le premier ennemi est plus loin que ça
 const RUN_STOP_DISTANCE := 120.0
+# plus l'ennemi est loin, plus le joueur court vite pour le rejoindre (vitesse
+# ajoutée par pixel au-delà de RUN_STOP_DISTANCE) : pas de longue attente entre deux ennemis
+const RUN_CATCH_UP_PER_PIXEL := 1.5
 const MAX_ENEMIES := 5
 # flux régulier d'ennemis : un toutes les SPAWN_INTERVAL secondes (plus court aux
 # niveaux élevés), tout de suite si l'écran est vide ; une apparition retardée
@@ -24,6 +29,10 @@ const SPAWN_INTERVAL_JITTER := 0.15
 const SPAWN_MIN_DELAY := 0.4
 # écart minimal avec le dernier ennemi au point d'apparition
 const SPAWN_MIN_SPACING := 40.0
+# un ennemi vaincu rapproche l'apparition suivante : plus on enchaîne vite, plus
+# les ennemis arrivent vite (il en reste au plus KILL_SPAWN_MAX_QUEUE devant)
+const KILL_SPAWN_DELAY := 0.5
+const KILL_SPAWN_MAX_QUEUE := 1
 const LEVEL_UP_HEAL := 20
 # ennemis à vaincre pour finir un niveau : assez de lettres pour qu'une erreur ne
 # suffise pas à rater la précision demandée (33 au niveau 1 : 2 erreurs permises à 94 %)
@@ -47,6 +56,8 @@ const WORDS_SPAWN_INTERVAL_PER_LETTER := 0.5
 const WORDS_LAYOUT_SHIFT := 38.0
 # nombre de touches ratées montrées dans le bilan
 const MISSED_KEYS_SHOWN := 3
+# mode Arcade : tapé sur l'écran « Prêt ? », toutes les touches sont ensuite bonnes
+const CHEAT_CODE := "godmode"
 
 signal player_ready
 signal stats_closed
@@ -73,6 +84,9 @@ var _ready_keys: Array = []
 var _ready_pressed: Array = []
 var _is_showing_stats := false
 var _can_close_stats := false
+# mode triche (jusqu'au retour au menu ou au game over) et lettres tapées pour le code
+var _is_cheating := false
+var _cheat_typed := ""
 
 # statistiques de la tentative en cours
 var _good_keys := 0
@@ -93,6 +107,7 @@ func _ready():
 	_hud.menu_requested.connect(_go_to_menu)
 	if GlobalGame.isWordsMode():
 		_apply_light_layout()
+	GlobalAudio.play_level_music()
 
 	_start_level(GlobalGame.getLevel())
 
@@ -115,11 +130,12 @@ func _process(_delta):
 
 func _physics_process(delta):
 	var is_playing = not (_is_gameover or _is_level_starting or _is_showing_stats)
-	var enemy_near = not _queue.is_empty() and _queue[0].position.x - _player.position.x < RUN_STOP_DISTANCE
 	if is_playing:
 		_update_spawn(delta)
-	if is_playing and not enemy_near:
-		_player.run(delta)
+	var enemy_distance = INF if _queue.is_empty() else _queue[0].position.x - _player.position.x
+	if is_playing and enemy_distance >= RUN_STOP_DISTANCE:
+		var catch_up = 0.0 if _queue.is_empty() else (enemy_distance - RUN_STOP_DISTANCE) * RUN_CATCH_UP_PER_PIXEL
+		_player.run(delta, catch_up)
 	else:
 		_player.stop_running()
 
@@ -148,6 +164,7 @@ func _unhandled_input(event):
 
 	if _is_showing_stats:
 		if _can_close_stats and event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+			GlobalAudio.play("click")
 			stats_closed.emit()
 		get_viewport().set_input_as_handled()
 		return
@@ -192,6 +209,7 @@ func _start_level(level: int, focus_keys: Array = []):
 
 	_is_level_starting = true
 	_hud.show_banner(tr("LEVEL") % level, subtitle)
+	GlobalAudio.play("level_start")
 	_ready_keys = HOME_KEYS.duplicate()
 	for key in new_keys:
 		if not _ready_keys.has(key):
@@ -203,6 +221,7 @@ func _start_level(level: int, focus_keys: Array = []):
 	_is_waiting_ready = true
 	await player_ready
 	_hud.keyboard_overlay.set_message(tr("GO"), Color.WHITE)
+	GlobalAudio.play("go")
 	await get_tree().create_timer(0.6).timeout
 	# le clavier reste quelques secondes en transparence pour voir la disposition,
 	# et tout le niveau pendant les leçons qui apprennent les touches
@@ -212,13 +231,24 @@ func _start_level(level: int, focus_keys: Array = []):
 
 
 func _on_ready_key_typed(typed: String):
+	_check_cheat_code(typed)
 	if not _ready_keys.has(typed) or _ready_pressed.has(typed):
 		return
 	_ready_pressed.append(typed)
 	_hud.keyboard_overlay.mark_ready_key(typed)
+	GlobalAudio.play("ready", 1.0 + 0.12 * (_ready_pressed.size() - 1))
 	if _ready_pressed.size() == _ready_keys.size():
 		_is_waiting_ready = false
 		player_ready.emit()
+
+
+func _check_cheat_code(typed: String):
+	if _is_cheating or not GlobalGame.isWordsMode():
+		return
+	_cheat_typed = (_cheat_typed + typed).right(CHEAT_CODE.length())
+	if _cheat_typed == CHEAT_CODE:
+		_is_cheating = true
+		_hud.show_cheat_indicator()
 
 
 # touches du niveau : celles des leçons apprises, ou tout le clavier en mode Mots
@@ -323,6 +353,8 @@ func _on_key_typed(typed: String):
 
 	var target: Enemy = _queue[0]
 	var expected = target.get_next_key()
+	if _is_cheating:
+		typed = expected
 	if typed != expected:
 		_errors += 1
 		_hud.key_stats.record(expected, false)
@@ -336,7 +368,7 @@ func _on_key_typed(typed: String):
 	# bonne touche mais ennemi hors de portée : le joueur se rue sur lui s'il est
 	# à l'écran, sinon c'est un coup dans le vide
 	var must_dash = not _player.can_hit(target)
-	if must_dash and target.position.x - _screen_left() > DASH_MAX_SCREEN_X:
+	if must_dash and not GlobalGame.isWordsMode() and target.position.x - _screen_left() > DASH_MAX_SCREEN_X:
 		GlobalPlayer.reset_combo()
 		_player.whiff()
 		_key_track.too_early()
@@ -370,6 +402,8 @@ func _remove_from_queue(enemy: Enemy):
 
 func _on_enemy_die(enemy: Enemy):
 	_remove_from_queue(enemy)
+	if _queue.size() <= KILL_SPAWN_MAX_QUEUE:
+		_spawn_cooldown = min(_spawn_cooldown, KILL_SPAWN_DELAY)
 	GlobalPlayer.add_kill()
 	if not _is_level_complete and not _is_level_starting:
 		_killed_in_level += 1
@@ -414,6 +448,9 @@ func _end_level():
 	_hud.keyboard_overlay.hide_keyboard()
 	_is_showing_stats = true
 	_can_close_stats = false
+	GlobalAudio.play("level_passed" if passed else "level_retry")
+	if is_record:
+		get_tree().create_timer(0.9).timeout.connect(GlobalAudio.play.bind("record"))
 	await _hud.level_stats.show_stats(passed, accuracy, required_accuracy, _good_keys, _errors, missed_keys, level_score, GlobalGame.getLevelBestScore(_level), is_record)
 	_can_close_stats = true
 	await stats_closed

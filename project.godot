@@ -24,6 +24,7 @@ GlobalPlayer="*res://src/Autoload/GlobalPlayer.gd"
 GlobalLessons="*res://src/Autoload/GlobalLessons.gd"
 GlobalWords="*res://src/Autoload/GlobalWords.gd"
 GlobalTransition="*res://src/Autoload/global_transition.tscn"
+GlobalAudio="*res://src/Autoload/GlobalAudio.gd"
 
 [display]
 

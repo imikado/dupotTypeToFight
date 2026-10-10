@@ -75,8 +75,10 @@ func _unhandled_input(event):
 	if not visible or not event is InputEventKey or not event.pressed or event.echo:
 		return
 	if event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+		GlobalAudio.play("click")
 		_next()
 	elif event.keycode == KEY_ESCAPE:
+		GlobalAudio.play("click")
 		_close()
 	get_viewport().set_input_as_handled()
 

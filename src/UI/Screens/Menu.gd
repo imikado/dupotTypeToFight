@@ -15,6 +15,8 @@ extends Control
 @onready var _language: OptionButton = $SettingsPanel/VBoxContainer/Grid/Language
 @onready var _required_accuracy: OptionButton = $SettingsPanel/VBoxContainer/Grid/RequiredAccuracy
 @onready var _tutorial: OptionButton = $SettingsPanel/VBoxContainer/Grid/Tutorial
+@onready var _sound: OptionButton = $SettingsPanel/VBoxContainer/Grid/Sound
+@onready var _music: OptionButton = $SettingsPanel/VBoxContainer/Grid/Music
 @onready var _level_panel: Control = $LevelPanel
 @onready var _level_grid: GridContainer = $LevelPanel/VBoxContainer/Scroll/Grid
 @onready var _level_info: Label = $LevelPanel/VBoxContainer/InfoLabel
@@ -24,6 +26,7 @@ extends Control
 
 func _ready():
 	get_tree().paused = false
+	GlobalAudio.play_menu_music()
 	# le premier plan du décor passerait devant les boutons
 	$Background/Foreground.visible = false
 
@@ -39,6 +42,8 @@ func _ready():
 	_language.select(GlobalGame.LANGUAGES.find(GlobalGame.getLanguage()))
 	_required_accuracy.select(GlobalGame.REQUIRED_ACCURACY_CHOICES.find(GlobalGame.getRequiredAccuracy()))
 	_tutorial.select(0 if GlobalGame.isTutorialEnabled() else 1)
+	_sound.select(0 if GlobalGame.isSoundEnabled() else 1)
+	_music.select(0 if GlobalGame.isMusicEnabled() else 1)
 	_settings_panel.visible = false
 	_level_panel.visible = false
 	_refresh_texts()
@@ -104,7 +109,7 @@ func _on_level_back_button_pressed():
 
 
 # fenêtre des paramètres : difficulté, clavier, langue, précision pour passer un
-# niveau, tutoriel avant le niveau 1
+# niveau, tutoriel avant le niveau 1, bruitages et musique
 func _on_settings_button_pressed():
 	_settings_panel.visible = true
 	_difficulty.grab_focus()
@@ -129,6 +134,16 @@ func _unhandled_input(event):
 # 0 : Oui, 1 : Non
 func _on_tutorial_item_selected(index: int):
 	GlobalGame.setTutorialEnabled(index == 0)
+
+
+# 0 : Oui, 1 : Non
+func _on_sound_item_selected(index: int):
+	GlobalGame.setSoundEnabled(index == 0)
+
+
+# 0 : Oui, 1 : Non
+func _on_music_item_selected(index: int):
+	GlobalGame.setMusicEnabled(index == 0)
 
 
 func _on_required_accuracy_item_selected(index: int):

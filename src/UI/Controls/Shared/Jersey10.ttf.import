@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://frd8k11alv7l"
-path="res://.godot/imported/Pixeled.ttf-1f36c6497bde9fe270ea03bb88887df5.fontdata"
+uid="uid://dim4q1ocrxndw"
+path="res://.godot/imported/Jersey10.ttf-4609cd9462a6d7614938f40a7cb50b70.fontdata"
 
 [deps]
 
-source_file="res://src/UI/Controls/Shared/Pixeled.ttf"
-dest_files=["res://.godot/imported/Pixeled.ttf-1f36c6497bde9fe270ea03bb88887df5.fontdata"]
+source_file="res://src/UI/Controls/Shared/Jersey10.ttf"
+dest_files=["res://.godot/imported/Jersey10.ttf-4609cd9462a6d7614938f40a7cb50b70.fontdata"]
 
 [params]
 

@@ -41,6 +41,10 @@ var _required_accuracy := 0.94
 # tutoriel sur la position des mains avant le niveau 1 (désactivable dans les paramètres)
 var _tutorial_enabled := true
 
+# bruitages et musique (désactivables dans les paramètres)
+var _sound_enabled := true
+var _music_enabled := true
+
 var currentLevel = 1
 var _game_mode := GAME_MODE.LEARN
 
@@ -128,6 +132,26 @@ func setTutorialEnabled(enabled: bool):
 	saveSettings()
 
 
+func isSoundEnabled() -> bool:
+	return _sound_enabled
+
+
+func setSoundEnabled(enabled: bool):
+	_sound_enabled = enabled
+	GlobalAudio.apply_settings()
+	saveSettings()
+
+
+func isMusicEnabled() -> bool:
+	return _music_enabled
+
+
+func setMusicEnabled(enabled: bool):
+	_music_enabled = enabled
+	GlobalAudio.apply_settings()
+	saveSettings()
+
+
 func getRequiredAccuracy() -> float:
 	return _required_accuracy
 
@@ -201,7 +225,7 @@ func _load_progress():
 
 
 func saveSettings():
-	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language, "show_keyboard": _show_keyboard, "required_accuracy": _required_accuracy, "tutorial": _tutorial_enabled}
+	var settings = {"difficulty": _level_difficulty, "layout": _keyboard_layout, "language": _language, "show_keyboard": _show_keyboard, "required_accuracy": _required_accuracy, "tutorial": _tutorial_enabled, "sound": _sound_enabled, "music": _music_enabled}
 	saveFile(PATH_SETTINGS, JSON.stringify(settings))
 
 
@@ -214,6 +238,8 @@ func loadSettings():
 	_keyboard_layout = int(parsed.get("layout", KEYBOARD_LAYOUT.AZERTY)) as KEYBOARD_LAYOUT
 	_show_keyboard = bool(parsed.get("show_keyboard", false))
 	_tutorial_enabled = bool(parsed.get("tutorial", true))
+	_sound_enabled = bool(parsed.get("sound", true))
+	_music_enabled = bool(parsed.get("music", true))
 	var required_accuracy = float(parsed.get("required_accuracy", _required_accuracy))
 	if REQUIRED_ACCURACY_CHOICES.has(required_accuracy):
 		_required_accuracy = required_accuracy

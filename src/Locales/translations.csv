@@ -65,3 +65,5 @@ MODE_ARCADE,Arcade,Arcade
 MODE_ARCADE_TAG,Words,Mots
 MODE_ARCADE_DESC,"3, 4, 5 letters and more","3, 4, 5 lettres et plus"
 MODE_BEST,Best: %d,Record : %d
+SETTINGS_SOUND,Sound effects,Bruitages
+SETTINGS_MUSIC,Music,Musique

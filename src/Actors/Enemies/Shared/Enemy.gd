@@ -157,6 +157,7 @@ func hit():
 		return
 
 	_state = STATE.DAMAGED
+	GlobalAudio.play("hit")
 	_sprite.stop()
 	_sprite.play("damaged")
 	var tween = create_tween()

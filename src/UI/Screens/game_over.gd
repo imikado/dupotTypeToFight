@@ -17,6 +17,8 @@ func _ready():
 		GlobalGame.getLevel(), GlobalPlayer.get_killed(), GlobalPlayer.get_best_combo()
 	]
 	_record_label.visible = score > 0 and score >= GlobalGame.getHighestScore()
+	if _record_label.visible:
+		GlobalAudio.play("record")
 	# on rejoue le niveau perdu autant de fois qu'on veut, sans repartir du niveau 1
 	_replay_button.text = tr("RETRY_LEVEL") % GlobalGame.getLevel()
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Génère l'image de couverture itch.io (630x500, taille recommandée) à partir des
-# assets du jeu : forêt en décor, titre en police Pixeled, grande touche F au
+# assets du jeu : forêt en décor, titre en police Jersey 10, grande touche F au
 # centre comme en jeu, le loup face aux ennemis.
 # L'image est composée à 315x250 puis doublée sans lissage (pixels nets).
 #
@@ -80,7 +80,7 @@ cover.alpha_composite(brushes, (0, H - brushes.height + 4))
 
 draw = ImageDraw.Draw(cover)
 draw.fontmode = "1"  # pas d'anticrénelage : texte en pixels nets
-font_path = os.path.join(ROOT, "src/UI/Controls/Shared/Pixeled.ttf")
+font_path = os.path.join(ROOT, "src/UI/Controls/Shared/Jersey10.ttf")
 
 # grande touche F au centre, comme en jeu (couleur de l'index gauche), avec son anneau
 F_COLOR = (242, 237, 61)
