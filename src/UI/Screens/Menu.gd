@@ -37,6 +37,8 @@ func _ready():
 	# dans un navigateur (export HTML5), on ne peut pas quitter le jeu
 	_quit_button.visible = not OS.has_feature("web")
 
+	$VersionLabel.text = "v" + ProjectSettings.get_setting("application/config/version", "")
+
 	_difficulty.select(GlobalGame.getLevelDifficulty())
 	_layout.select(GlobalGame.getKeyboardLayout())
 	_language.select(GlobalGame.LANGUAGES.find(GlobalGame.getLanguage()))

@@ -24,13 +24,6 @@ umask 022
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DIR"
 
-# Export du binaire et du pck Linux avec la version de Godot du projet
-PROJECT_ROOT="$(cd "$DIR/../../.." && pwd)"
-GODOT="${GODOT:-$(command -v godot || echo "$HOME/bin/godot")}"
-echo "==> Exporting the Linux build with ${GODOT}..."
-"$GODOT" --headless --path "$PROJECT_ROOT" --import
-"$GODOT" --headless --path "$PROJECT_ROOT" --export-release "Linux" "$DIR/dupotTypeToFight.x86_64"
-
 yaml_field() {
   # Extract a top-level "key: value" from snapcraft.yaml, stripping inline
   # comments and surrounding quotes/whitespace.

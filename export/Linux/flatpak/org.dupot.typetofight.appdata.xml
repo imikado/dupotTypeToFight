@@ -28,31 +28,31 @@
   </description>
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_01_training.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_01_training.png</image>
       <caption>Training mode: type the key falling in the center to strike the enemies</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_02_arcade.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_02_arcade.png</image>
       <caption>Arcade mode: type the words written above the enemies</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_03_ready.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_03_ready.png</image>
       <caption>Each level starts by placing your index fingers and finding the new keys</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_04_error.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_04_error.png</image>
       <caption>On a mistake, the keyboard shows the wrong key and the expected one</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_05_stats.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_05_stats.png</image>
       <caption>Level results with accuracy, level record and most missed keys</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_06_menu.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_06_menu.png</image>
       <caption>Main menu: choose between Training and Arcade</caption>
     </screenshot>
     <screenshot>
-      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/main/export/Linux/screenshots/Screenshot_07_levels.png</image>
+      <image type="source">https://raw.githubusercontent.com/imikado/dupotTypeToFight/59e7459c01d5c48ed5621c24c3c86d3055a33235/export/Linux/screenshots/Screenshot_07_levels.png</image>
       <caption>Replay any level you reached, with its best score</caption>
     </screenshot>
   </screenshots>
@@ -78,7 +78,7 @@
     <content_attribute id="violence-cartoon">mild</content_attribute>
   </content_rating>
   <releases>
-    <release date="2026-10-08" version="1.0.0">
+    <release date="2026-10-11" version="1.0.0">
       <description>
         <ul>
           <li>First version</li>
