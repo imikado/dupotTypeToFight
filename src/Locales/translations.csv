@@ -67,3 +67,22 @@ MODE_ARCADE_DESC,"3, 4, 5 letters and more","3, 4, 5 lettres et plus"
 MODE_BEST,Best: %d,Record : %d
 SETTINGS_SOUND,Sound effects,Bruitages
 SETTINGS_MUSIC,Music,Musique
+SETTINGS_WORDS,Arcade words,Mots (Arcade)
+SETTINGS_WORDS_EDIT,Edit,Modifier
+WORDS_TITLE,Arcade words - %s,Mots du mode Arcade - %s
+WORDS_SIZE,Length,Taille
+WORDS_SIZE_ITEM,%d letters (%d),%d lettres (%d)
+WORDS_REMOVE_SIZE,Remove,Supprimer
+WORDS_NEW_SIZE,New length,Nouvelle taille
+WORDS_ADD_SIZE,Add,Ajouter
+WORDS_HELP,"Words separated by spaces, letters a-z only, all of the chosen length","Mots séparés par des espaces, lettres a-z, tous de la taille choisie"
+WORDS_COUNT,%d words,%d mots
+WORDS_EMPTY,"Empty: this length is skipped in game","Vide : cette taille est ignorée en jeu"
+WORDS_REJECTED,Ignored: %s,Ignorés : %s
+WORDS_SAVED,Saved,Enregistré
+WORDS_SAVE,Save,Enregistrer
+WORDS_RESET,Default list,Liste d'origine
+WORDS_CONFIRM,Confirm?,Confirmer ?
+WORDS_LENGTH_ERROR,"Not %d letters, ignored on save: %s","Pas %d lettres, ignorés à l'enregistrement : %s"
+WORDS_LENGTH_ERROR_MORE,(+%d more),(+%d autres)
+PAUSE_HINT,Space / Esc: resume,Espace / Echap : reprendre

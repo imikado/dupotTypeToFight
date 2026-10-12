@@ -88,7 +88,7 @@ Once you know the keys, put them together. Each enemy carries a **word written a
 | Start a level | Training: press F, J and the new keys of the level · Arcade: press F and J |
 | Show / hide the small keyboard (Training) | `Tab` (or the keyboard button at the top) |
 | Continue after the level results | `Space` or `Enter` |
-| Pause | `Esc` |
+| Pause / resume (then **Menu** to go back to the main menu) | `Space` or `Esc` |
 | Tutorial: next page / skip | `Space` or `Enter` / `Esc` |
 
 The **Settings** of the main menu let you choose the difficulty, the keyboard layout (AZERTY / QWERTY), the language, the accuracy needed to pass a level (94%, 90%, 80% or 70%) and whether the tutorial is shown before level 1 of Training.
@@ -101,7 +101,7 @@ Play it in your browser, no install needed: **[dupot-org.itch.io/type-to-fight](
 
 ### Flathub and Snap Store (Linux): coming soon
 
-Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `dupot-type-to-fight` on the Snap Store). The packaging files and the icon are ready in `export/Linux`; they will be published soon.
+Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `org-dupot-typetofight` on the Snap Store). The packaging files and the icon are ready in `export/Linux`; they will be published soon.
 
 ## 🛠️ Build from source
 
@@ -117,14 +117,15 @@ Export presets for **Linux** and **HTML5** are included in `export_presets.cfg`,
 | Script | Result |
 |---|---|
 | `./export_html5.sh` | HTML5 export in `export/HTML5/` and `dupotTypeToFight-html5.zip` (the build uploaded to itch.io) |
-| `./bundle.sh` | `export/Linux/bundle.tar.gz` for the Flathub manifest (pck, icons, appdata, .desktop) |
-| `./export/Linux/snap/update-version.sh` | syncs the snap version with `config/version` in `project.godot` |
-| `./export/Linux/snap/build-snap.sh` | exports the Linux build and packs the snap |
+| `./update_version.sh` | copies the version of the latest `<release>` of the Flathub appdata into `project.godot` (shown in the menu) and `snapcraft.yaml` |
+| `./export_flathub.sh` | `export/Linux/bundle.tar.gz` for the Flathub manifest (pck, icons, appdata, .desktop), with the appdata screenshots pinned to a pushed commit; prints its sha256 |
+| `./export_snap.sh` | exports the Linux build and packs the snap (`--install` to install it locally) |
 | `python3 tools/generate_icon.py` | regenerates the game icon in the dupot.org style (Flathub sizes, `icon.png`, snap icon) from the player sprite; needs Pillow |
 | `python3 tools/generate_itch_cover.py` | regenerates the itch.io cover image (630x500) in `export/itch/cover.png` from the game assets; needs Pillow |
 | `python3 tools/generate_tutorial_hands.py` | regenerates the pixel art hands of the tutorial (`src/UI/Hands/hand-left.png`, `hand-right.png`); needs Pillow |
 | `python3 tools/generate_sounds.py` | regenerates the 8-bit sound effects (`src/Audio/Sfx`) and the looping music of the menu and the levels (`src/Audio/Music`); no dependency |
 | `tools/capture_media.sh` | regenerates the demo GIFs (`docs/training.gif`, `docs/arcade.gif`) and the screenshots (`export/Linux/screenshots`): a bot plays the game; needs Godot 4.7 and ffmpeg, opens game windows for a few minutes and keeps your saved progress |
+| `tools/promo_video.sh` | records games played by a bot in 1920x1080 with sound and edits the YouTube promo video `export/promo/type_to_fight.mp4` (menu, Training, Arcade, end card with the itch.io link); needs Godot 4.7 and ffmpeg, takes about 8 minutes |
 
 ## 🌍 Translations
 

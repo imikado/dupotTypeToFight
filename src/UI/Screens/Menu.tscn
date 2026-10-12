@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://src/UI/Screens/Menu.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://src/Levels/Shared/background.tscn" id="2_background"]
 [ext_resource type="PackedScene" path="res://src/Actors/Players/Player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://src/Actors/Enemies/Ant/ant.tscn" id="4_ant"]
 [ext_resource type="PackedScene" path="res://src/Levels/level.tscn" id="5_level"]
+[ext_resource type="PackedScene" path="res://src/UI/Screens/words_editor.tscn" id="6_words_editor"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings"]
 bg_color = Color(0.0627451, 0.0862745, 0.2, 0.95)
@@ -239,9 +240,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -134.0
-offset_top = -96.0
+offset_top = -104.0
 offset_right = 134.0
-offset_bottom = 120.0
+offset_bottom = 128.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_settings")
@@ -389,6 +390,17 @@ popup/item_0/id = 0
 popup/item_1/text = "NO"
 popup/item_1/id = 1
 
+[node name="WordsLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "SETTINGS_WORDS"
+vertical_alignment = 1
+
+[node name="WordsButton" type="Button" parent="SettingsPanel/VBoxContainer/Grid"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+text = "SETTINGS_WORDS_EDIT"
+
 [node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
@@ -456,6 +468,9 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "BACK"
 
+[node name="WordsEditor" parent="." instance=ExtResource("6_words_editor")]
+layout_mode = 1
+
 [connection signal="pressed" from="LevelPanel/VBoxContainer/BackButton" to="." method="_on_level_back_button_pressed"]
 [connection signal="pressed" from="Modes/TrainingButton" to="." method="_on_play_button_pressed" binds= [0]]
 [connection signal="pressed" from="Modes/ArcadeButton" to="." method="_on_play_button_pressed" binds= [1]]
@@ -469,3 +484,5 @@ text = "BACK"
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Tutorial" to="." method="_on_tutorial_item_selected"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Sound" to="." method="_on_sound_item_selected"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Music" to="." method="_on_music_item_selected"]
+[connection signal="pressed" from="SettingsPanel/VBoxContainer/Grid/WordsButton" to="." method="_on_words_button_pressed"]
+[connection signal="closed" from="WordsEditor" to="." method="_on_words_editor_closed"]

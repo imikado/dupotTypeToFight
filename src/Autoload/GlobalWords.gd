@@ -28,22 +28,84 @@ const WORDS := {
 	},
 }
 
+# listes modifiées par le joueur (écran des paramètres), par langue :
+# langue -> {"longueur": [mots]} ; une langue présente remplace entièrement la
+# liste par défaut (on peut ainsi supprimer ou ajouter des tailles)
+const PATH_CUSTOM_WORDS := "user://words.dat"
+# tailles qu'on peut ajouter dans l'éditeur
+const EDIT_MIN_LENGTH := 2
+const EDIT_MAX_LENGTH := 15
+# lettres accentuées ramenées à la lettre simple quand le joueur saisit ses mots
+const ACCENTS := {
+	"à": "a", "â": "a", "ä": "a", "á": "a",
+	"é": "e", "è": "e", "ê": "e", "ë": "e",
+	"î": "i", "ï": "i", "í": "i",
+	"ô": "o", "ö": "o", "ó": "o",
+	"ù": "u", "û": "u", "ü": "u", "ú": "u",
+	"ç": "c", "ñ": "n", "ÿ": "y",
+}
+
+var _custom := {}
+# langue -> {longueur: [mots]}
 var _cache := {}
 
 
-# longueur des mots au niveau donné : 3 lettres aux premiers niveaux, puis 4...
-func get_word_length(level: int) -> int:
-	return min(MAX_LENGTH, MIN_LENGTH + int((level - 1) / LEVELS_PER_LENGTH))
+func _ready():
+	_load_custom()
 
 
-func get_words(length: int) -> Array:
+func _get_language() -> String:
 	var language = GlobalGame.getLanguage()
 	if not WORDS.has(language):
 		language = GlobalGame.DEFAULT_LANGUAGE
-	var cache_key = "%s_%d" % [language, length]
-	if not _cache.has(cache_key):
-		_cache[cache_key] = WORDS[language][length].split(" ", false)
-	return _cache[cache_key]
+	return language
+
+
+# listes de la langue du jeu : longueur -> [mots]
+func _get_lists() -> Dictionary:
+	var language = _get_language()
+	if not _cache.has(language):
+		var lists := {}
+		if _custom.has(language):
+			for length in _custom[language]:
+				lists[int(length)] = Array(_custom[language][length])
+		else:
+			for length in WORDS[language]:
+				lists[length] = Array(WORDS[language][length].split(" ", false))
+		_cache[language] = lists
+	return _cache[language]
+
+
+# tailles jouables (au moins un mot), de la plus courte à la plus longue
+func get_lengths() -> Array:
+	var lists = _get_lists()
+	var lengths = lists.keys().filter(func(length): return not lists[length].is_empty())
+	lengths.sort()
+	return lengths
+
+
+# toutes les tailles de l'éditeur, même vides
+func get_all_lengths() -> Array:
+	var lengths = _get_lists().keys()
+	lengths.sort()
+	return lengths
+
+
+# longueur des mots au niveau donné : la plus courte taille aux premiers niveaux,
+# puis la suivante... (la liste par défaut si le joueur a tout vidé)
+func get_word_length(level: int) -> int:
+	var lengths = get_lengths()
+	if lengths.is_empty():
+		return MIN_LENGTH
+	return lengths[min(lengths.size() - 1, int((level - 1) / LEVELS_PER_LENGTH))]
+
+
+func get_words(length: int) -> Array:
+	var words = _get_lists().get(length, [])
+	if words.is_empty() and get_lengths().is_empty():
+		var language = _get_language()
+		return Array(WORDS[language].get(length, WORDS[language][MIN_LENGTH]).split(" ", false))
+	return words
 
 
 # weak_keys : touche -> poids ; les mots contenant une touche ratée reviennent plus souvent
@@ -64,3 +126,89 @@ func get_keys() -> Array:
 		for key in row:
 			keys.append(key)
 	return keys
+
+
+# --- édition des listes (écran des paramètres) ---
+
+# mots d'une taille tels qu'enregistrés (vide si la taille est vide ou absente)
+func get_list(length: int) -> Array:
+	return _get_lists().get(length, []).duplicate()
+
+
+# découpe le texte saisi : mots en minuscules sans accents, de la bonne taille ;
+# -> {"words": [mots retenus], "rejected": [mots ignorés],
+#     "wrong_length": [mots ignorés car pas de la bonne taille]}
+func parse_words(text: String, length: int) -> Dictionary:
+	var words := []
+	var rejected := []
+	var wrong_length := []
+	var regex := RegEx.create_from_string("^[a-z]+$")
+	for raw in text.replace(",", " ").replace(";", " ").replace("\n", " ").replace("\t", " ").split(" ", false):
+		var word = _strip_accents(raw.to_lower())
+		if word.length() != length:
+			rejected.append(raw)
+			wrong_length.append(raw)
+		elif regex.search(word) == null:
+			rejected.append(raw)
+		elif not words.has(word):
+			words.append(word)
+	return {"words": words, "rejected": rejected, "wrong_length": wrong_length}
+
+
+func _strip_accents(word: String) -> String:
+	for accent in ACCENTS:
+		word = word.replace(accent, ACCENTS[accent])
+	return word
+
+
+func set_words(length: int, words: Array):
+	_get_lists()[length] = words.duplicate()
+	_save_custom()
+
+
+func add_length(length: int):
+	var lists = _get_lists()
+	if not lists.has(length):
+		lists[length] = []
+		_save_custom()
+
+
+func remove_length(length: int):
+	_get_lists().erase(length)
+	_save_custom()
+
+
+func is_customized() -> bool:
+	return _custom.has(_get_language())
+
+
+# retour à la liste fournie avec le jeu, pour la langue en cours
+func reset_to_default():
+	var language = _get_language()
+	_custom.erase(language)
+	_cache.erase(language)
+	GlobalGame.saveFile(PATH_CUSTOM_WORDS, JSON.stringify(_custom))
+
+
+func _save_custom():
+	var lists := {}
+	var source = _get_lists()
+	for length in source:
+		lists[str(length)] = source[length]
+	_custom[_get_language()] = lists
+	GlobalGame.saveFile(PATH_CUSTOM_WORDS, JSON.stringify(_custom))
+
+
+func _load_custom():
+	if not FileAccess.file_exists(PATH_CUSTOM_WORDS):
+		return
+	var parsed = JSON.parse_string(GlobalGame.load_file(PATH_CUSTOM_WORDS))
+	if not parsed is Dictionary:
+		return
+	for language in parsed:
+		if WORDS.has(language) and parsed[language] is Dictionary:
+			var lists := {}
+			for length in parsed[language]:
+				if str(length).is_valid_int() and parsed[language][length] is Array:
+					lists[str(length)] = parsed[language][length].map(func(word): return str(word))
+			_custom[language] = lists

@@ -1,5 +1,5 @@
 title: Type to Fight
-name: dupot-type-to-fight
+name: org-dupot-typetofight
 base: core22
 version: "1.0.0"
 summary: Learn to type with ten fingers by fighting enemies
@@ -19,7 +19,7 @@ source-code: https://github.com/imikado/dupotTypeToFight/
 website: https://www.dupot.org/games.html
 
 apps:
-  dupot-type-to-fight:
+  org-dupot-typetofight:
     command: dupotTypeToFight.x86_64
     extensions: [gnome]
     plugs:

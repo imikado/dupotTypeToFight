@@ -168,5 +168,20 @@ func _on_resume_button_pressed():
 	resume_requested.emit()
 
 
+# le HUD tourne pendant la pause : Échap reprend la partie ; Espace aussi, sauf
+# si un bouton a le focus (Reprendre ou Menu) : il s'active seul au relâchement
+func _unhandled_input(event):
+	if not _pause_panel.visible or not event is InputEventKey or not event.pressed or event.echo:
+		return
+	if event.keycode == KEY_SPACE:
+		var focused = get_viewport().gui_get_focus_owner()
+		if not (focused is BaseButton and _pause_panel.is_ancestor_of(focused)):
+			resume_requested.emit()
+		get_viewport().set_input_as_handled()
+	elif event.keycode == KEY_ESCAPE:
+		resume_requested.emit()
+		get_viewport().set_input_as_handled()
+
+
 func _on_menu_button_pressed():
 	menu_requested.emit()

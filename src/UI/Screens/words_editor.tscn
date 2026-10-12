@@ -1,0 +1,144 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/UI/Screens/words_editor.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_words"]
+bg_color = Color(0.0627451, 0.0862745, 0.2, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.34, 0.39, 0.73, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="WordsEditor" type="Panel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -118.0
+offset_right = 200.0
+offset_bottom = 118.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_words")
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.823529, 0.247059, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 8
+text = "WORDS_TITLE"
+horizontal_alignment = 1
+
+[node name="SizeRow" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SizeLabel" type="Label" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "WORDS_SIZE"
+vertical_alignment = 1
+
+[node name="Sizes" type="OptionButton" parent="VBoxContainer/SizeRow"]
+custom_minimum_size = Vector2(88, 0)
+layout_mode = 2
+
+[node name="RemoveButton" type="Button" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+text = "WORDS_REMOVE_SIZE"
+
+[node name="Spacer" type="Control" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NewSizeLabel" type="Label" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text = "WORDS_NEW_SIZE"
+vertical_alignment = 1
+
+[node name="NewSize" type="SpinBox" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+min_value = 2.0
+max_value = 15.0
+value = 8.0
+rounded = true
+alignment = 1
+
+[node name="AddButton" type="Button" parent="VBoxContainer/SizeRow"]
+layout_mode = 2
+text = "WORDS_ADD_SIZE"
+
+[node name="HelpLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.95, 1)
+theme_override_font_sizes/font_size = 6
+text = "WORDS_HELP"
+
+[node name="Text" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 8
+wrap_mode = 1
+
+[node name="ErrorLabel" type="Label" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 6
+autowrap_mode = 3
+max_lines_visible = 2
+
+[node name="InfoLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 6
+text_overrun_behavior = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+text = "WORDS_SAVE"
+
+[node name="ResetButton" type="Button" parent="VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+text = "WORDS_RESET"
+
+[node name="BackButton" type="Button" parent="VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+text = "BACK"
+
+[connection signal="item_selected" from="VBoxContainer/SizeRow/Sizes" to="." method="_on_sizes_item_selected"]
+[connection signal="pressed" from="VBoxContainer/SizeRow/RemoveButton" to="." method="_on_remove_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/SizeRow/AddButton" to="." method="_on_add_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ButtonRow/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ButtonRow/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/ButtonRow/BackButton" to="." method="_on_back_button_pressed"]

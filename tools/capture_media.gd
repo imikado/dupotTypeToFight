@@ -7,6 +7,8 @@ extends SceneTree
 # - gif_training, gif_arcade : partie au niveau 3, à enregistrer avec --write-movie
 # - shot_training, shot_arcade, shot_ready, shot_error, shot_stats, shot_menu,
 #   shot_levels : une capture PNG dans le fichier SHOT
+# - promo_menu, promo_training, promo_arcade : extraits de la vidéo de promotion
+#   (tools/promo_video.sh), à enregistrer avec --write-movie
 #
 # Attention : modifie les données utilisateur du jeu (paramètres, progression) ;
 # le script shell les sauvegarde et les restaure.
@@ -15,6 +17,8 @@ const LEVEL_SCENE := "res://src/Levels/level.tscn"
 const MENU_SCENE := "res://src/UI/Screens/Menu.tscn"
 const LEVEL := 3
 const GIF_DURATION := 16.0
+const PROMO_MENU_DURATION := 5.0
+const PROMO_LEVEL_DURATION := 15.0
 const ERROR_RATE := 0.07
 
 var _scenario := OS.get_environment("SCENARIO")
@@ -41,15 +45,18 @@ func _run():
 	game.setGameMode(game.GAME_MODE.WORDS if words else game.GAME_MODE.LEARN)
 
 	match _scenario:
-		"shot_menu":
+		"shot_menu", "promo_menu":
 			# scores de démonstration (les données sont vierges au départ)
 			game.setGameMode(game.GAME_MODE.LEARN)
 			game.saveHighScore(1840, 6)
 			game.setGameMode(game.GAME_MODE.WORDS)
 			game.saveHighScore(1320, 4)
 			await _show_menu()
-			await _wait(1.0)
-			await _shot()
+			if _scenario == "promo_menu":
+				await _wait(PROMO_MENU_DURATION)
+			else:
+				await _wait(1.0)
+				await _shot()
 		"shot_levels":
 			game.setGameMode(game.GAME_MODE.LEARN)
 			game.unlockLevel(6)
@@ -105,6 +112,11 @@ func _run():
 			await _press_ready_keys()
 			_bot_enabled = true
 			await _wait(GIF_DURATION - 3.0)
+		"promo_training", "promo_arcade":
+			await _start_level()
+			await _press_ready_keys()
+			_bot_enabled = true
+			await _wait(PROMO_LEVEL_DURATION - 3.0)
 	quit()
 
 

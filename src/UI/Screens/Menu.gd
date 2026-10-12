@@ -17,6 +17,8 @@ extends Control
 @onready var _tutorial: OptionButton = $SettingsPanel/VBoxContainer/Grid/Tutorial
 @onready var _sound: OptionButton = $SettingsPanel/VBoxContainer/Grid/Sound
 @onready var _music: OptionButton = $SettingsPanel/VBoxContainer/Grid/Music
+@onready var _words_edit_button: Button = $SettingsPanel/VBoxContainer/Grid/WordsButton
+@onready var _words_editor: Panel = $WordsEditor
 @onready var _level_panel: Control = $LevelPanel
 @onready var _level_grid: GridContainer = $LevelPanel/VBoxContainer/Scroll/Grid
 @onready var _level_info: Label = $LevelPanel/VBoxContainer/InfoLabel
@@ -111,7 +113,7 @@ func _on_level_back_button_pressed():
 
 
 # fenêtre des paramètres : difficulté, clavier, langue, précision pour passer un
-# niveau, tutoriel avant le niveau 1, bruitages et musique
+# niveau, tutoriel avant le niveau 1, bruitages, musique et mots du mode Arcade
 func _on_settings_button_pressed():
 	_settings_panel.visible = true
 	_difficulty.grab_focus()
@@ -125,12 +127,26 @@ func _on_back_button_pressed():
 func _unhandled_input(event):
 	if not event.is_action_pressed("ui_cancel"):
 		return
-	if _settings_panel.visible:
+	if _words_editor.visible:
+		_words_editor.close()
+		get_viewport().set_input_as_handled()
+	elif _settings_panel.visible:
 		_on_back_button_pressed()
 		get_viewport().set_input_as_handled()
 	elif _level_panel.visible:
 		_on_level_back_button_pressed()
 		get_viewport().set_input_as_handled()
+
+
+# mots du mode Arcade, par taille : l'éditeur remplace la fenêtre des paramètres
+func _on_words_button_pressed():
+	_settings_panel.visible = false
+	_words_editor.open()
+
+
+func _on_words_editor_closed():
+	_settings_panel.visible = true
+	_words_edit_button.grab_focus()
 
 
 # 0 : Oui, 1 : Non

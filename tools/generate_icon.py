@@ -7,7 +7,7 @@
 # Sans argument, met à jour toutes les icônes du projet :
 #   - export/Linux/flatpak/icons/<taille>.png (16 à 512 px, pour Flathub)
 #   - icon.png (256 px, icône du projet Godot et des exports)
-#   - export/Linux/snap/snap/gui/dupot-type-to-fight.png (icône du snap)
+#   - export/Linux/snap/snap/gui/org-dupot-typetofight.png (icône du snap)
 #
 # Usage : python3 tools/generate_icon.py [dossier_de_sortie]
 # Dépendance : Pillow (paquet python3-pil)
@@ -101,5 +101,5 @@ for size in [16, 24, 32, 48, 64, 128, 256]:
 # sans dossier de sortie précisé : on met aussi à jour l'icône du projet et du snap
 if len(sys.argv) <= 1:
     shutil.copy(os.path.join(out, "256x256.png"), os.path.join(ROOT, "icon.png"))
-    shutil.copy(os.path.join(out, "256x256.png"), os.path.join(ROOT, "export", "Linux", "snap", "snap", "gui", "dupot-type-to-fight.png"))
+    shutil.copy(os.path.join(out, "256x256.png"), os.path.join(ROOT, "export", "Linux", "snap", "snap", "gui", "org-dupot-typetofight.png"))
 print("Icônes générées dans", out)

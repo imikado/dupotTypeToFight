@@ -149,8 +149,10 @@ func _unhandled_input(event):
 	if not event is InputEventKey or not event.pressed or event.echo:
 		return
 
+	# pendant la pause, le niveau ne reçoit plus les touches : la reprise au
+	# clavier est gérée par le HUD
 	if event.keycode == KEY_ESCAPE:
-		_set_paused(not get_tree().paused)
+		_set_paused(true)
 		get_viewport().set_input_as_handled()
 		return
 
@@ -166,6 +168,12 @@ func _unhandled_input(event):
 		if _can_close_stats and event.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
 			GlobalAudio.play("click")
 			stats_closed.emit()
+		get_viewport().set_input_as_handled()
+		return
+
+	# Espace n'est jamais une touche à taper : elle met en pause
+	if event.keycode == KEY_SPACE:
+		_set_paused(true)
 		get_viewport().set_input_as_handled()
 		return
 
