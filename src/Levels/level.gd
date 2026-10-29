@@ -40,7 +40,6 @@ const KILLS_TO_PASS_START := 30
 const KILLS_TO_PASS_PER_LEVEL := 3
 # touches de repos des index : le joueur les appuie pour montrer qu'il est prêt
 # (avec, en plus, les nouvelles touches du niveau, pour savoir les trouver)
-const HOME_KEYS := ["f", "j"]
 # durée d'affichage du clavier en transparence au début du niveau
 const LAYOUT_DURATION := 4.0
 # niveaux d'apparition des araignées (2 touches) et des scarabées (3 touches)
@@ -218,13 +217,13 @@ func _start_level(level: int, focus_keys: Array = []):
 	_is_level_starting = true
 	_hud.show_banner(tr("LEVEL") % level, subtitle)
 	GlobalAudio.play("level_start")
-	_ready_keys = HOME_KEYS.duplicate()
+	_ready_keys = GlobalLessons.get_home_keys().duplicate()
 	for key in new_keys:
 		if not _ready_keys.has(key):
 			_ready_keys.append(key)
 	_hud.keyboard_overlay.show_level_keys(keys, new_keys, _ready_keys)
 
-	# le niveau ne démarre que quand le joueur a posé ses index sur F et J
+	# le niveau ne démarre que quand le joueur a posé ses index sur les touches de repos
 	_ready_pressed.clear()
 	_is_waiting_ready = true
 	await player_ready

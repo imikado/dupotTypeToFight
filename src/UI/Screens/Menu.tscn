@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://src/UI/Screens/Menu.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://src/Levels/Shared/background.tscn" id="2_background"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://src/Actors/Enemies/Ant/ant.tscn" id="4_ant"]
 [ext_resource type="PackedScene" path="res://src/Levels/level.tscn" id="5_level"]
 [ext_resource type="PackedScene" path="res://src/UI/Screens/words_editor.tscn" id="6_words_editor"]
+[ext_resource type="Texture2D" path="res://src/UI/Controls/Shared/icon-keyboard.png" id="7_icon_keyboard"]
+[ext_resource type="Texture2D" path="res://src/UI/Controls/Shared/icon-language.png" id="8_icon_language"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings"]
 bg_color = Color(0.0627451, 0.0862745, 0.2, 0.95)
@@ -186,14 +188,39 @@ theme_override_constants/separation = 12
 alignment = 1
 
 [node name="SettingsButton" type="Button" parent="Menu"]
-custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "SETTINGS"
 
 [node name="QuitButton" type="Button" parent="Menu"]
-custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "MENU_QUIT"
+
+[node name="Preferences" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 214.0
+offset_right = 130.0
+offset_bottom = 232.0
+grow_horizontal = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="KeyboardButton" type="Button" parent="Preferences"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "SETTINGS_KEYBOARD"
+icon = ExtResource("7_icon_keyboard")
+
+[node name="LanguageButton" type="Button" parent="Preferences"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "SETTINGS_LANGUAGE"
+icon = ExtResource("8_icon_language")
 
 [node name="WebsiteLink" type="LinkButton" parent="."]
 layout_mode = 1
@@ -300,11 +327,13 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(88, 0)
 layout_mode = 2
 selected = 0
-item_count = 2
+item_count = 3
 popup/item_0/text = "KEYBOARD_AZERTY"
 popup/item_0/id = 0
 popup/item_1/text = "KEYBOARD_QWERTY"
 popup/item_1/id = 1
+popup/item_2/text = "KEYBOARD_BEPO"
+popup/item_2/id = 2
 
 [node name="LanguageLabel" type="Label" parent="SettingsPanel/VBoxContainer/Grid"]
 layout_mode = 2
@@ -475,6 +504,8 @@ layout_mode = 1
 [connection signal="pressed" from="Modes/TrainingButton" to="." method="_on_play_button_pressed" binds= [0]]
 [connection signal="pressed" from="Modes/ArcadeButton" to="." method="_on_play_button_pressed" binds= [1]]
 [connection signal="pressed" from="Menu/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="Preferences/KeyboardButton" to="." method="_on_keyboard_button_pressed"]
+[connection signal="pressed" from="Preferences/LanguageButton" to="." method="_on_language_button_pressed"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Difficulty" to="." method="_on_difficulty_item_selected"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Layout" to="." method="_on_layout_item_selected"]
 [connection signal="item_selected" from="SettingsPanel/VBoxContainer/Grid/Language" to="." method="_on_language_item_selected"]

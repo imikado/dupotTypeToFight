@@ -100,13 +100,20 @@ func _close():
 
 func _show_page():
 	var page = PAGES[_page]
-	_title.text = tr(page.title)
-	_text.text = tr(page.text)
+	# les touches de repos dépendent de la disposition (F et J, E et T en BÉPO)
+	_title.text = _with_home_keys(tr(page.title))
+	_text.text = _with_home_keys(tr(page.text))
 	_next_button.text = tr("GO") if _page == PAGES.size() - 1 else tr("TUTO_NEXT")
 	_skip_button.text = tr("TUTO_SKIP")
 	_hint.text = tr("TUTO_HINT")
 	_time = 0.0
 	queue_redraw()
+
+
+func _with_home_keys(text: String) -> String:
+	if not text.contains("%s"):
+		return text
+	return text % GlobalLessons.get_home_keys().map(func(key): return key.to_upper())
 
 
 func _draw():
@@ -125,12 +132,17 @@ func _draw():
 
 # --- pages ---
 
-# touches F et J zoomées avec leur ergot ; les mains « curseur » viennent le toucher
+# touche de repos d'un index, avec son ergot
+func _is_home_key(key: String) -> bool:
+	return GlobalLessons.get_home_keys().has(key)
+
+
+# touches F et J (E et T en BÉPO) zoomées avec leur ergot ; les mains « curseur » viennent le toucher
 func _draw_bumps():
 	var key_size = 64.0
 	var top = STAGE_TOP + 6
 	var centers = [size.x / 2 - 56, size.x / 2 + 56]
-	var letters = ["f", "j"]
+	var letters = GlobalLessons.get_home_keys()
 	var pulse = 0.5 + 0.5 * sin(_time * 5)
 	for i in 2:
 		var rect = Rect2(centers[i] - key_size / 2, top, key_size, key_size)
@@ -160,8 +172,8 @@ func _draw_home():
 	for i in row.length():
 		var key = row[i]
 		var rect = Rect2(x0 + i * HOME_KEY_STEP, STAGE_TOP, HOME_KEY_SIZE, HOME_KEY_SIZE)
-		_draw_key(key, rect, 12, key == "f" or key == "j")
-		if key == "f" or key == "j":
+		_draw_key(key, rect, 12, _is_home_key(key))
+		if _is_home_key(key):
 			draw_rect(rect.grow(3), Color(COLOR_HIGHLIGHT, 0.3 + 0.7 * pulse), false, 2)
 	# bouts des doigts au bas des touches (les lettres restent lisibles)
 	var hand_y = STAGE_TOP + HOME_KEY_SIZE - 4 - HAND_INDEX_TIP_Y * HAND_SCALE
@@ -178,11 +190,14 @@ func _draw_colors():
 	var step = 34.0
 	var row_offsets = [0.0, 8.0, 24.0]
 	var rows = GlobalLessons.get_keyboard_rows()
-	var x0 = (size.x - 10 * step - 8) / 2
+	var columns := 0
+	for row in rows:
+		columns = max(columns, row.length())
+	var x0 = (size.x - columns * step - row_offsets[1]) / 2
 	for r in rows.size():
 		for i in rows[r].length():
 			var rect = Rect2(x0 + row_offsets[r] + i * step, STAGE_TOP + 4 + r * step, key_size, key_size)
-			_draw_key(rows[r][i], rect, 10, rows[r][i] == "f" or rows[r][i] == "j")
+			_draw_key(rows[r][i], rect, 10, _is_home_key(rows[r][i]))
 	# légende : main gauche / main droite
 	var font = get_theme_default_font()
 	var legend_y = STAGE_TOP + 4 + 3 * step + 14
@@ -209,7 +224,7 @@ func _draw_play():
 	var center = Vector2(size.x / 2, STAGE_TOP + 46 - (1.0 - fall * fall) * 40)
 	var ring = lerp(40.0, key_size / 2 + 4, clamp((cycle - 0.35) / 1.0, 0.0, 1.0))
 	draw_arc(center, ring, 0, TAU, 48, COLOR_RING, 2)
-	_draw_key("f", Rect2(center - Vector2.ONE * key_size / 2, Vector2.ONE * key_size), 16, false)
+	_draw_key(GlobalLessons.get_home_keys()[0], Rect2(center - Vector2.ONE * key_size / 2, Vector2.ONE * key_size), 16, false)
 
 
 # --- dessin ---
@@ -228,8 +243,8 @@ func _draw_page_dots():
 
 func _home_row() -> String:
 	var row: String = GlobalLessons.get_keyboard_rows()[1]
-	# en QWERTY, l'auriculaire droit se pose sur « ; »
-	return row if row.length() >= 10 else row + ";"
+	# en QWERTY, l'auriculaire droit se pose sur « ; » ; en BÉPO, sur N (10e touche)
+	return row.substr(0, 10) if row.length() >= 10 else row + ";"
 
 
 # touche au style du jeu : fond = couleur du doigt assombrie, bordure = couleur du doigt

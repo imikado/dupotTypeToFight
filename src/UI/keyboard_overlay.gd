@@ -22,7 +22,7 @@ const POINTER_LEFT_TIP_X := 10.0
 const POINTER_RIGHT_TIP_X := 5.0
 # agrandissement entier pour garder des pixels nets
 const POINTER_SCALE := 2
-# touches F et J dans la rangée de repos (AZERTY comme QWERTY)
+# touches F et J dans la rangée de repos (AZERTY comme QWERTY ; E et T en BÉPO)
 const HOME_INDEX_LEFT := 3
 const HOME_INDEX_RIGHT := 6
 

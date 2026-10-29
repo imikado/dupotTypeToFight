@@ -1,7 +1,7 @@
 extends Node
 
 # Progression inspirée des méthodes d'apprentissage de la dactylographie :
-# on commence par les touches de repos des index (F et J), puis on élargit
+# on commence par les touches de repos des index (F et J, E et T en BÉPO), puis on élargit
 # la rangée de repos, puis les touches d'index G/H, la rangée du haut et enfin
 # celle du bas. Chaque entrée = les nouvelles touches débloquées à ce niveau.
 const LESSONS := {
@@ -35,6 +35,22 @@ const LESSONS := {
 		["c", "m"],
 		["x", "z", "b"],
 	],
+	2: [  # GlobalGame.KEYBOARD_LAYOUT.BEPO
+		["e", "t"],
+		["i", "s"],
+		["u", "r"],
+		["a", "n"],
+		["c", "m"],
+		["o", "v"],
+		["p", "d"],
+		["é", "l"],
+		["b", "j"],
+		["q", "k"],
+		["x", "g"],
+		["y", "h"],
+		["f", "z", "w"],
+		["è", "à", "ç"],
+	],
 }
 
 const FINGERS := {
@@ -57,6 +73,16 @@ const FINGERS := {
 		"majeur droit": "ik",
 		"annulaire droit": "ol",
 		"auriculaire droit": "p",
+	},
+	2: {  # GlobalGame.KEYBOARD_LAYOUT.BEPO
+		"auriculaire gauche": "baà",
+		"annulaire gauche": "éuy",
+		"majeur gauche": "pix",
+		"index gauche": "oe.è,k",
+		"index droit": "^c'vtq",
+		"majeur droit": "dsg",
+		"annulaire droit": "lrh",
+		"auriculaire droit": "jnfzmwç",
 	},
 }
 
@@ -81,6 +107,8 @@ const COLOR_UNKNOWN_FINGER := Color(0.34, 0.39, 0.73)
 const KEYBOARD_ROWS := {
 	0: ["azertyuiop", "qsdfghjklm", "wxcvbn"],  # GlobalGame.KEYBOARD_LAYOUT.AZERTY
 	1: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],  # GlobalGame.KEYBOARD_LAYOUT.QWERTY
+	# les signes (^ , . ') restent affichés pour garder la position des lettres
+	2: ["bépoè^vdljzw", "auie,ctsrnmç", "àyx.k'qghf"],  # GlobalGame.KEYBOARD_LAYOUT.BEPO
 }
 # nuance selon la rangée : plus foncé en haut, normal sur la rangée de repos,
 # plus clair en bas
@@ -90,6 +118,11 @@ const ROW_BOTTOM_LIGHTEN := 0.3
 
 func _get_lessons() -> Array:
 	return LESSONS[GlobalGame.getKeyboardLayout()]
+
+
+# touches de repos des index (avec l'ergot) : F et J, ou E et T en BÉPO
+func get_home_keys() -> Array:
+	return _get_lessons()[0]
 
 
 func get_lesson_count() -> int:

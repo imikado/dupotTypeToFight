@@ -6,13 +6,14 @@
 
 **An arcade game to learn touch typing: learn the keys letter by letter in Training, then type whole words in Arcade to strike the enemies.**
 
-Free · All ages · Play in your browser · Made with Godot 4.7
+Free · All ages · Play in your browser or on Linux · Made with Godot 4.7
 
 [![itch.io](https://img.shields.io/badge/itch.io-Play%20in%20browser-FA5C5C?logo=itchdotio&logoColor=white)](https://dupot-org.itch.io/type-to-fight)
+[![Flathub](https://img.shields.io/flathub/v/org.dupot.typetofight?logo=flathub&logoColor=white&label=Flathub)](https://flathub.org/apps/org.dupot.typetofight)
 [![Godot 4.7](https://img.shields.io/badge/Godot-4.7-478CBF?logo=godotengine&logoColor=white)](https://godotengine.org)
 [![License: LGPL-2.1](https://img.shields.io/badge/License-LGPL--2.1-blue.svg)](LICENSE)
 
-**▶️ [Play now on itch.io](https://dupot-org.itch.io/type-to-fight)**
+**▶️ [Play now on itch.io](https://dupot-org.itch.io/type-to-fight)** · **🐧 [Get it on Flathub](https://flathub.org/apps/org.dupot.typetofight)**
 
 | 🎓 Training: learn the keys letter by letter | 🕹️ Arcade: type whole words |
 |:---:|:---:|
@@ -34,7 +35,7 @@ Choose your mode right from the main menu. Each mode has its own levels, progres
 
 The touch typing course. Each enemy carries one key at a time, and the key to type **falls in the center of the screen**.
 
-- 🎯 **Progressive lessons**: start with the **F** and **J** home keys, then D K, S L, Q M, G H, the top row and the bottom row, in **AZERTY** or **QWERTY** (13 lessons, then all keys, faster)
+- 🎯 **Progressive lessons**: start with the **F** and **J** home keys, then D K, S L, Q M, G H, the top row and the bottom row, in **AZERTY**, **QWERTY** (13 lessons) or **BÉPO** (14 lessons, starting with **E** and **T**), then all keys, faster
 - 🎓 **Tutorial before level 1**: where to put your hands, the small bumps on F and J, one finger per color, shown with zoomed keys and pixel art hands (with a Skip button, and it can be turned off in the settings)
 - ✅ **Get ready**: each level starts by placing your index fingers on F and J and finding the new keys
 - ⌨️ **Help keyboard**: during the lessons, a see-through keyboard stays in the center of the screen with the key to type highlighted
@@ -91,7 +92,7 @@ Once you know the keys, put them together. Each enemy carries a **word written a
 | Pause / resume (then **Menu** to go back to the main menu) | `Space` or `Esc` |
 | Tutorial: next page / skip | `Space` or `Enter` / `Esc` |
 
-The **Settings** of the main menu let you choose the difficulty, the keyboard layout (AZERTY / QWERTY), the language, the accuracy needed to pass a level (94%, 90%, 80% or 70%) and whether the tutorial is shown before level 1 of Training.
+The **Settings** of the main menu let you choose the difficulty, the keyboard layout (AZERTY / QWERTY / BÉPO), the language, the accuracy needed to pass a level (94%, 90%, 80% or 70%) and whether the tutorial is shown before level 1 of Training.
 
 ## 📦 Play
 
@@ -99,9 +100,22 @@ The **Settings** of the main menu let you choose the difficulty, the keyboard la
 
 Play it in your browser, no install needed: **[dupot-org.itch.io/type-to-fight](https://dupot-org.itch.io/type-to-fight)**
 
-### Flathub and Snap Store (Linux): coming soon
+### Flathub (Linux)
 
-Linux packages are being prepared (`org.dupot.typetofight` on Flathub, `org-dupot-typetofight` on the Snap Store). The packaging files and the icon are ready in `export/Linux`; they will be published soon.
+Type to Fight is now available on Flathub: **[flathub.org/apps/org.dupot.typetofight](https://flathub.org/apps/org.dupot.typetofight)**
+
+<a href="https://flathub.org/apps/org.dupot.typetofight"><img width="200" alt="Get it on Flathub" src="https://flathub.org/api/badge?locale=en"/></a>
+
+Or install it from the command line:
+
+```bash
+flatpak install flathub org.dupot.typetofight
+flatpak run org.dupot.typetofight
+```
+
+### Snap Store (Linux): coming soon
+
+The snap package (`org-dupot-typetofight`) is being prepared; its packaging files are ready in `export/Linux/snap`.
 
 ## 🛠️ Build from source
 
@@ -119,7 +133,7 @@ Export presets for **Linux** and **HTML5** are included in `export_presets.cfg`,
 | `./export_html5.sh` | HTML5 export in `export/HTML5/` and `dupotTypeToFight-html5.zip` (the build uploaded to itch.io) |
 | `./update_version.sh` | copies the version of the latest `<release>` of the Flathub appdata into `project.godot` (shown in the menu) and `snapcraft.yaml` |
 | `./export_flathub.sh` | `export/Linux/bundle.tar.gz` for the Flathub manifest (pck, icons, appdata, .desktop), with the appdata screenshots pinned to a pushed commit; prints its sha256 |
-| `./export_snap.sh` | exports the Linux build and packs the snap (`--install` to install it locally) |
+| `./build_snap.sh` | exports the Linux build and packs the snap (`--install` to install it locally) |
 | `python3 tools/generate_icon.py` | regenerates the game icon in the dupot.org style (Flathub sizes, `icon.png`, snap icon) from the player sprite; needs Pillow |
 | `python3 tools/generate_itch_cover.py` | regenerates the itch.io cover image (630x500) in `export/itch/cover.png` from the game assets; needs Pillow |
 | `python3 tools/generate_tutorial_hands.py` | regenerates the pixel art hands of the tutorial (`src/UI/Hands/hand-left.png`, `hand-right.png`); needs Pillow |

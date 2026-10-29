@@ -5,6 +5,7 @@ DIFFICULTY_EASY,Easy,Facile
 DIFFICULTY_NORMAL,Normal,Normal
 KEYBOARD_AZERTY,AZERTY keyboard,Clavier AZERTY
 KEYBOARD_QWERTY,QWERTY keyboard,Clavier QWERTY
+KEYBOARD_BEPO,BÉPO keyboard,Clavier BÉPO
 LEVEL,Level %d,Niveau %d
 LEVEL_NEW_KEYS,New keys: %s,Nouvelles touches : %s
 LEVEL_ALL_KEYS,"All keys, faster!","Toutes les touches, plus vite !"
@@ -38,10 +39,10 @@ BACK,Back,Retour
 TUTO_SKIP,Skip,Passer
 TUTO_NEXT,Next,Suivant
 TUTO_HINT,Space: next   Esc: skip,Espace : suivant   Echap : passer
-TUTO_BUMPS_TITLE,Find F and J,Trouve F et J
-TUTO_BUMPS_TEXT,The F and J keys have a small bump: you can find them with your index fingers without looking at the keyboard.,Les touches F et J ont un petit ergot en relief : tes index les trouvent sans regarder le clavier.
+TUTO_BUMPS_TITLE,Find %s and %s,Trouve %s et %s
+TUTO_BUMPS_TEXT,The %s and %s keys have a small bump: you can find them with your index fingers without looking at the keyboard.,Les touches %s et %s ont un petit ergot en relief : tes index les trouvent sans regarder le clavier.
 TUTO_HOME_TITLE,Starting position,Position de départ
-TUTO_HOME_TEXT,"Left index finger on F, right index finger on J. The other fingers rest on the keys next to them, thumbs on the space bar.","Index gauche sur F, index droit sur J. Les autres doigts se posent sur les touches voisines, les pouces sur la barre d'espace."
+TUTO_HOME_TEXT,"Left index finger on %s, right index finger on %s. The other fingers rest on the keys next to them, thumbs on the space bar.","Index gauche sur %s, index droit sur %s. Les autres doigts se posent sur les touches voisines, les pouces sur la barre d'espace."
 TUTO_COLORS_TITLE,"One finger, one color","Un doigt, une couleur"
 TUTO_COLORS_TEXT,"Each finger types the keys of its color, then goes back to its resting key on the middle row.","Chaque doigt tape les touches de sa couleur, puis revient sur sa touche de repos, sur la rangée du milieu."
 TUTO_LEFT_HAND,Left hand,Main gauche

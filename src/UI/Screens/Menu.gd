@@ -3,12 +3,18 @@ extends Control
 @export var mainLevel: PackedScene
 @export_file("*.tscn") var tutorial_scene_path: String
 
+# noms courts des dispositions (GlobalGame.KEYBOARD_LAYOUT), pour le menu
+const LAYOUT_NAMES := ["AZERTY", "QWERTY", "BÉPO"]
+
 # les deux modes de jeu : Training (lettre par lettre) et Arcade (mots)
 @onready var _play_button: Button = $Modes/TrainingButton
 @onready var _words_button: Button = $Modes/ArcadeButton
 @onready var _training_best: Label = $Modes/TrainingButton/VBox/Best
 @onready var _arcade_best: Label = $Modes/ArcadeButton/VBox/Best
 @onready var _settings_button: Button = $Menu/SettingsButton
+# clavier et langue choisis, rappelés sous les boutons ; un clic ouvre le paramètre
+@onready var _keyboard_button: Button = $Preferences/KeyboardButton
+@onready var _language_button: Button = $Preferences/LanguageButton
 @onready var _settings_panel: Control = $SettingsPanel
 @onready var _difficulty: OptionButton = $SettingsPanel/VBoxContainer/Grid/Difficulty
 @onready var _layout: OptionButton = $SettingsPanel/VBoxContainer/Grid/Layout
@@ -25,6 +31,9 @@ extends Control
 @onready var _quit_button: Button = $Menu/QuitButton
 @onready var _enemy: Enemy = $Ant
 
+# bouton qui a ouvert les paramètres : il reprend le focus au retour
+var _settings_opener: Button
+
 
 func _ready():
 	get_tree().paused = false
@@ -34,7 +43,7 @@ func _ready():
 
 	# l'ennemi du menu sert de décor : il ne doit pas avancer
 	_enemy.set_physics_process(false)
-	_enemy.setup(["f", "j"], null, 1)
+	_enemy.setup(GlobalLessons.get_home_keys(), null, 1)
 
 	# dans un navigateur (export HTML5), on ne peut pas quitter le jeu
 	_quit_button.visible = not OS.has_feature("web")
@@ -115,13 +124,26 @@ func _on_level_back_button_pressed():
 # fenêtre des paramètres : difficulté, clavier, langue, précision pour passer un
 # niveau, tutoriel avant le niveau 1, bruitages, musique et mots du mode Arcade
 func _on_settings_button_pressed():
+	_open_settings(_settings_button, _difficulty)
+
+
+func _on_keyboard_button_pressed():
+	_open_settings(_keyboard_button, _layout)
+
+
+func _on_language_button_pressed():
+	_open_settings(_language_button, _language)
+
+
+func _open_settings(opener: Button, focused: Control):
+	_settings_opener = opener
 	_settings_panel.visible = true
-	_difficulty.grab_focus()
+	focused.grab_focus()
 
 
 func _on_back_button_pressed():
 	_settings_panel.visible = false
-	_settings_button.grab_focus()
+	_settings_opener.grab_focus()
 
 
 func _unhandled_input(event):
@@ -174,12 +196,15 @@ func _on_difficulty_item_selected(index: int):
 
 func _on_layout_item_selected(index: int):
 	GlobalGame.loadKeyboardLayout(index)
+	_refresh_texts()
 
 
 # textes composés dans le code : les autres se traduisent seuls au changement de langue
 func _refresh_texts():
 	_training_best.text = tr("MODE_BEST") % GlobalGame.getHighestScore(GlobalGame.GAME_MODE.LEARN)
 	_arcade_best.text = tr("MODE_BEST") % GlobalGame.getHighestScore(GlobalGame.GAME_MODE.WORDS)
+	_keyboard_button.text = LAYOUT_NAMES[GlobalGame.getKeyboardLayout()]
+	_language_button.text = _language.get_item_text(_language.selected)
 
 
 func _on_language_item_selected(index: int):

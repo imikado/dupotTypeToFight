@@ -9,7 +9,7 @@ const PATH_PROGRESS := "user://progress.dat"
 
 enum LEVEL_DIFFICULTY {EASY, NORMAL}
 
-enum KEYBOARD_LAYOUT {AZERTY, QWERTY}
+enum KEYBOARD_LAYOUT {AZERTY, QWERTY, BEPO}
 
 # apprentissage lettre par lettre, ou mots de plus en plus longs
 enum GAME_MODE {LEARN, WORDS}

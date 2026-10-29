@@ -16,7 +16,8 @@
       type the right key to strike them before they reach you.
     </p>
     <ul>
-      <li>Progressive lessons, from the F and J home keys to the whole keyboard (AZERTY and QWERTY)</li>
+      <li>Supports AZERTY, QWERTY and BÉPO keyboard layouts</li>
+      <li>Progressive lessons, from the home keys to the whole keyboard</li>
       <li>One color per finger: warm colors for the left hand, complementary colors for the right hand</li>
       <li>Rhythm-game display: the next key falls in the center of the screen</li>
       <li>Your mistakes come back more often until you master them</li>
@@ -78,6 +79,15 @@
     <content_attribute id="violence-cartoon">mild</content_attribute>
   </content_rating>
   <releases>
+
+    <release date="2026-10-29" version="1.1.0">
+      <description>
+        <ul>
+          <li>Add BÉPO keyboard</li>
+
+        </ul>
+      </description>
+    </release>
     <release date="2026-10-11" version="1.0.0">
       <description>
         <ul>
